@@ -1,16 +1,11 @@
 package burp;
 
 import javax.swing.*;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import java.awt.*;
 
-public class BurpExtender implements IBurpExtender, ITab, IHttpListener
+class BurpExtender implements IBurpExtender, ITab, IHttpListener
 {
 
-    private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
     private JPanel panel;
     private JTextField accessKey;
@@ -23,45 +18,38 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks)
     {
 
-        this.callbacks = callbacks;
-
         helpers = callbacks.getHelpers();
 
         callbacks.setExtensionName("AWS Signer");
 
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                panel = new JPanel(new BorderLayout());
+        SwingUtilities.invokeLater(() -> {
+            panel = new JPanel(new BorderLayout());
 
-                JPanel labels = new JPanel(new GridLayout(0, 1));
-                JPanel inputs = new JPanel(new GridLayout(0, 1));
+            JPanel labels = new JPanel(new GridLayout(0, 1));
+            JPanel inputs = new JPanel(new GridLayout(0, 1));
 
-                panel.add(labels, BorderLayout.WEST);
-                panel.add(inputs, BorderLayout.CENTER);
+            panel.add(labels, BorderLayout.WEST);
+            panel.add(inputs, BorderLayout.CENTER);
 
-                accessKey = new JTextField();
-                secretKey = new JTextField();
-                region = new JTextField();
-                service = new JTextField();
+            accessKey = new JTextField();
+            secretKey = new JTextField();
+            region = new JTextField();
+            service = new JTextField();
 
-                labels.add(new JLabel("Access Key: "), BorderLayout.WEST);
-                inputs.add(accessKey, BorderLayout.CENTER);
-                labels.add(new JLabel("Secret Key: "), BorderLayout.WEST);
-                inputs.add(secretKey, BorderLayout.CENTER);
-                labels.add(new JLabel("Region: "), BorderLayout.WEST);
-                inputs.add(region, BorderLayout.CENTER);
-                labels.add(new JLabel("Service: "), BorderLayout.WEST);
-                inputs.add(service, BorderLayout.CENTER);
+            labels.add(new JLabel("Access Key: "), BorderLayout.WEST);
+            inputs.add(accessKey, BorderLayout.CENTER);
+            labels.add(new JLabel("Secret Key: "), BorderLayout.WEST);
+            inputs.add(secretKey, BorderLayout.CENTER);
+            labels.add(new JLabel("Region: "), BorderLayout.WEST);
+            inputs.add(region, BorderLayout.CENTER);
+            labels.add(new JLabel("Service: "), BorderLayout.WEST);
+            inputs.add(service, BorderLayout.CENTER);
 
-                callbacks.customizeUiComponent(panel);
+            callbacks.customizeUiComponent(panel);
 
-                callbacks.addSuiteTab(BurpExtender.this);
+            callbacks.addSuiteTab(BurpExtender.this);
 
-                callbacks.registerHttpListener(BurpExtender.this);
-            }
+            callbacks.registerHttpListener(BurpExtender.this);
         });
     }
 

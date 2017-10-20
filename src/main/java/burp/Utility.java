@@ -2,22 +2,12 @@ package burp;
 
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
-import com.sun.deploy.util.StringUtils;
-import uk.co.lucasweb.aws.v4.signer.Header;
-import uk.co.lucasweb.aws.v4.signer.HttpRequest;
-import uk.co.lucasweb.aws.v4.signer.Signer;
-import uk.co.lucasweb.aws.v4.signer.credentials.AwsCredentials;
+
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -25,16 +15,14 @@ import java.util.regex.Pattern;
 
 public class Utility {
 
-    private IExtensionHelpers helpers;
-
     public static byte[] signRequest(IHttpRequestResponse messageInfo, IExtensionHelpers helpers, String service, String region, String accessKey, String secretKey) throws Exception {
         IRequestInfo requestInfo = helpers.analyzeRequest(messageInfo);
 
         List<String> headers = requestInfo.getHeaders();
-        List<String> newHeaders = new ArrayList<String>(headers);
+        List<String> newHeaders = new ArrayList<>(headers);
         headers.remove(0);
 
-        Map<String, String> headerMap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, String> headerMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
         String authHeader = "";
         String amzDate = "";
@@ -72,15 +60,15 @@ public class Utility {
 
         Collections.sort(signedHeaderList);
 
-        String canonicalHeaders = "";
+        StringBuilder canonicalHeaders = new StringBuilder();
 
         for (String signedHeader : signedHeaderList){
-            canonicalHeaders = canonicalHeaders + signedHeader.toLowerCase() + ':' + headerMap.get(signedHeader) + '\n';
+            canonicalHeaders.append(signedHeader.toLowerCase()).append(':').append(headerMap.get(signedHeader)).append('\n');
         }
 
         byte[] request = messageInfo.getRequest();
         String body = "";
-        String payloadHash = "";
+        String payloadHash;
 
         if (!requestInfo.getMethod().equals("GET")){
 
@@ -118,25 +106,22 @@ public class Utility {
                 signedHeaders + ", " + "Signature=" + signature.toLowerCase());
         newHeaders.add("X-Amz-Date: " + amzdate);
 
-        byte[] signedRequest = helpers.buildHttpMessage(newHeaders, body.getBytes());
-
-        return signedRequest;
+        return helpers.buildHttpMessage(newHeaders, body.getBytes());
     }
 
-    static byte[] HmacSHA256(String data, byte[] key) throws Exception {
+    private static byte[] HmacSHA256(String data, byte[] key) throws Exception {
         String algorithm="HmacSHA256";
         Mac mac = Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(key, algorithm));
         return mac.doFinal(data.getBytes("UTF8"));
     }
 
-    static byte[] getSignatureKey(String key, String dateStamp, String regionName, String serviceName) throws Exception {
+    private static byte[] getSignatureKey(String key, String dateStamp, String regionName, String serviceName) throws Exception {
         byte[] kSecret = ("AWS4" + key).getBytes("UTF8");
         byte[] kDate = HmacSHA256(dateStamp, kSecret);
         byte[] kRegion = HmacSHA256(regionName, kDate);
         byte[] kService = HmacSHA256(serviceName, kRegion);
-        byte[] kSigning = HmacSHA256("aws4_request", kService);
-        return kSigning;
+        return HmacSHA256("aws4_request", kService);
     }
 
     private static String getSignedHeaders(String authHeader){
