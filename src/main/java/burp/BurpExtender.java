@@ -3,7 +3,7 @@ package burp;
 import javax.swing.*;
 import java.awt.*;
 
-class BurpExtender implements IBurpExtender, ITab, IHttpListener
+public class BurpExtender implements IBurpExtender, ITab, IHttpListener
 {
 
     private IExtensionHelpers helpers;
