@@ -44,10 +44,11 @@ public class Utility {
         newHeaders.remove(amzDate);
 
         SimpleDateFormat amz = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-        amz.setTimeZone(TimeZone.getTimeZone("GMT"));
+        amz.setTimeZone(TimeZone.getTimeZone("UTC"));
         String amzdate = amz.format(new Date());
 
         SimpleDateFormat dateStamp = new SimpleDateFormat("yyyyMMdd");
+        dateStamp.setTimeZone(TimeZone.getTimeZone("UTC"));
         String dateStampString = dateStamp.format(new Date());
 
         headerMap.put("x-amz-date",amzdate);

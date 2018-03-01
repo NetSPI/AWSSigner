@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/awssigner.iml" filepath="$PROJECT_DIR$/.idea/modules/awssigner.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/awssigner_main.iml" filepath="$PROJECT_DIR$/.idea/modules/awssigner_main.iml" group="awssigner" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/awssigner_test.iml" filepath="$PROJECT_DIR$/.idea/modules/awssigner_test.iml" group="awssigner" />
+      <module fileurl="file://$PROJECT_DIR$/src/main/main.iml" filepath="$PROJECT_DIR$/src/main/main.iml" />
     </modules>
   </component>
 </project>

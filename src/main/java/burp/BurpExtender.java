@@ -1,6 +1,7 @@
 package burp;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener
@@ -22,28 +23,9 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
 
         callbacks.setExtensionName("AWS Signer");
 
+        callbacks.registerContextMenuFactory(new Menu());
+
         SwingUtilities.invokeLater(() -> {
-            panel = new JPanel(new BorderLayout());
-
-            JPanel labels = new JPanel(new GridLayout(0, 1));
-            JPanel inputs = new JPanel(new GridLayout(0, 1));
-
-            panel.add(labels, BorderLayout.WEST);
-            panel.add(inputs, BorderLayout.CENTER);
-
-            accessKey = new JTextField();
-            secretKey = new JTextField();
-            region = new JTextField();
-            service = new JTextField();
-
-            labels.add(new JLabel("Access Key: "), BorderLayout.WEST);
-            inputs.add(accessKey, BorderLayout.CENTER);
-            labels.add(new JLabel("Secret Key: "), BorderLayout.WEST);
-            inputs.add(secretKey, BorderLayout.CENTER);
-            labels.add(new JLabel("Region: "), BorderLayout.WEST);
-            inputs.add(region, BorderLayout.CENTER);
-            labels.add(new JLabel("Service: "), BorderLayout.WEST);
-            inputs.add(service, BorderLayout.CENTER);
 
             callbacks.customizeUiComponent(panel);
 
@@ -64,16 +46,20 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
     @Override
     public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) throws Exception {
 
-        IRequestInfo request = helpers.analyzeRequest(messageInfo.getRequest());
+        if (Menu.getStatus()) {
+            IRequestInfo request = helpers.analyzeRequest(messageInfo.getRequest());
 
-        java.util.List<String> headers = request.getHeaders();
+            java.util.List<String> headers = request.getHeaders();
 
-        if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))){
+            if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))){
 
-            byte[] signedRequest = Utility.signRequest(messageInfo, helpers, service.getText(), region.getText(), accessKey.getText(), secretKey.getText());
+                byte[] signedRequest = Utility.signRequest(messageInfo, helpers, service.getText(), region.getText(), accessKey.getText(), secretKey.getText());
 
-            messageInfo.setRequest(signedRequest);
+                messageInfo.setRequest(signedRequest);
 
+            }
         }
+
+
     }
 }
