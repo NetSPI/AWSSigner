@@ -62,7 +62,7 @@ public interface IMessageEditorTab
      * clear the existing message. This method will only be called with a new
      * message if the tab has already returned
      * <code>true</code> to a call to
-     * <code>isProfileEnabled()</code> with the same message details.
+     * <code>isEnabled()</code> with the same message details.
      *
      * @param content The message that is to be displayed, or
      * <code>null</code> if the tab should clear its contents and disable any
