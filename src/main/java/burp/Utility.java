@@ -7,6 +7,7 @@ import com.google.common.hash.Hashing;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -89,6 +90,7 @@ public class Utility {
             canonicalQueryString = "";
         }
 
+        canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F");
 
         String canonicalRequest  = requestInfo.getMethod() + '\n' + canonicalURI + '\n' + canonicalQueryString + '\n' +
                 canonicalHeaders +'\n' + signedHeaders + '\n' + payloadHash;
