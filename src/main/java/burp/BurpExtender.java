@@ -2,12 +2,14 @@ package burp;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.PrintWriter;
 import java.util.HashMap;
 
-public class BurpExtender implements IBurpExtender, ITab, IHttpListener
-{
+public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
     private IExtensionHelpers helpers;
     private PrintWriter pw;
@@ -30,11 +32,12 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
     private int SERVICE = 3;
 
     @Override
-    public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks)
-    {
+    public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
 
         helpers = callbacks.getHelpers();
         this.pw = new PrintWriter(callbacks.getStdout(), true);
+
+
         setupTab();
 
         callbacks.setExtensionName("AWS Signer");
@@ -49,6 +52,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
 
             callbacks.registerHttpListener(BurpExtender.this);
         });
+
+
     }
 
     public void createNewProfile() {
@@ -65,7 +70,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
             numProfiles++;
             profileComboBox.insertItemAt(new AWSSignerMenuItem("Profile " + numProfiles, numProfiles), boxSize - 1);
             profiles.put(numProfiles, new String[]{"", "", "", ""});
-            profileComboBox.setSelectedIndex(boxSize-1);
+            profileComboBox.setSelectedIndex(boxSize - 1);
             clearProfile();
 
             setMenuItems();
@@ -90,6 +95,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
     public void setupTab() {
         // Set up profiles combobox
         this.profiles = new HashMap<Integer, String[]>();
+
         createNewProfile();
         createNewProfile();
 
@@ -102,7 +108,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
                         pw.println("Creating new profile...");
                         createNewProfile();
                     } else {
-                      populateProfile(selectedProfile);
+                        populateProfile(selectedProfile);
                     }
                 }
             }
@@ -124,10 +130,10 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
                 int profile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
                 pw.println("Saved profile " + profile + " with key: " + accessKey.getText());
                 profiles.put(profile,
-                        new String[] {accessKey.getText(),
-                            secretKey.getText(),
-                            region.getText(),
-                            service.getText()});
+                        new String[]{accessKey.getText(),
+                                secretKey.getText(),
+                                region.getText(),
+                                service.getText()});
             }
 
             @Override
@@ -174,7 +180,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
                 } else if (profiles.size() > 0) {
 
                     // No newer profiles, but there are older ones. Move to the older one
-                    profileComboBox.setSelectedIndex(index-1);
+                    profileComboBox.setSelectedIndex(index - 1);
                     int newProfile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
                     populateProfile(newProfile);
                 } else {
@@ -218,7 +224,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
             @Override
             public void mouseReleased(MouseEvent e) {
                 int profile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
-               Menu.setEnabledProfile(profile);
+                Menu.setEnabledProfile(profile);
             }
 
             @Override
@@ -236,10 +242,10 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
     // Set the menu items in the context menu
     private void setMenuItems() {
         int itemCount = profileComboBox.getItemCount();
-        AWSSignerMenuItem[] menuItems = new AWSSignerMenuItem[itemCount-1];
+        AWSSignerMenuItem[] menuItems = new AWSSignerMenuItem[itemCount - 1];
 
         // Skip the first item, it's just the add profile button
-        for (int i=0; i<itemCount-1; i++) {
+        for (int i = 0; i < itemCount - 1; i++) {
             menuItems[i] = (AWSSignerMenuItem) profileComboBox.getItemAt(i);
         }
 
@@ -250,10 +256,12 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
     public String getTabCaption() {
         return "AWS Signer";
     }
+
     @Override
     public Component getUiComponent() {
         return panel;
     }
+
     @Override
     public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) throws Exception {
 
@@ -262,7 +270,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
 
             java.util.List<String> headers = request.getHeaders();
 
-            if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))){
+            if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))) {
                 String[] profile = this.profiles.get(Menu.getEnabledProfile());
                 pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
                 byte[] signedRequest = Utility.signRequest(messageInfo,
@@ -278,5 +286,75 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener
         }
 
 
+    }
+
+    {
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+        $$$setupUI$$$();
+    }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        panel = new JPanel();
+        panel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
+        final JLabel label1 = new JLabel();
+        label1.setText("Access Key: ");
+        panel.add(label1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        accessKey = new JTextField();
+        panel.add(accessKey, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("Secret Key:");
+        panel.add(label2, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("Region: ");
+        panel.add(label3, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label4 = new JLabel();
+        label4.setText("Service: ");
+        panel.add(label4, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        secretKey = new JTextField();
+        panel.add(secretKey, new com.intellij.uiDesigner.core.GridConstraints(2, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        region = new JTextField();
+        panel.add(region, new com.intellij.uiDesigner.core.GridConstraints(3, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        service = new JTextField();
+        panel.add(service, new com.intellij.uiDesigner.core.GridConstraints(4, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
+        panel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(6, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JLabel label5 = new JLabel();
+        label5.setText("Profile:");
+        panel.add(label5, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        profileComboBox = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
+        profileComboBox.setModel(defaultComboBoxModel1);
+        panel.add(profileComboBox, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        saveProfileButton = new JButton();
+        saveProfileButton.setText("Save Profile");
+        panel.add(saveProfileButton, new com.intellij.uiDesigner.core.GridConstraints(5, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel.add(panel1, new com.intellij.uiDesigner.core.GridConstraints(6, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel.add(panel2, new com.intellij.uiDesigner.core.GridConstraints(5, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        deleteProfileButton = new JButton();
+        deleteProfileButton.setText("Delete Profile");
+        panel2.add(deleteProfileButton, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        useProfileButton = new JButton();
+        useProfileButton.setText("Use Profile");
+        panel2.add(useProfileButton, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return panel;
     }
 }
