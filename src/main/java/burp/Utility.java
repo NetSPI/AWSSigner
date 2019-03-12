@@ -3,11 +3,9 @@ package burp;
 import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
