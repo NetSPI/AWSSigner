@@ -269,26 +269,27 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     @Override
     public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) throws Exception {
 
-        if (Menu.getEnabledProfile() > 0) {
-            IRequestInfo request = helpers.analyzeRequest(messageInfo.getRequest());
+        if(messageIsRequest) {
+            if (Menu.getEnabledProfile() > 0) {
+                IRequestInfo request = helpers.analyzeRequest(messageInfo.getRequest());
 
-            java.util.List<String> headers = request.getHeaders();
+                java.util.List<String> headers = request.getHeaders();
 
-            if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))) {
-                String[] profile = this.profiles.get(Menu.getEnabledProfile());
-                pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
-                byte[] signedRequest = Utility.signRequest(messageInfo,
-                        helpers,
-                        profile[SERVICE],
-                        profile[REGION],
-                        profile[ACCESS_KEY],
-                        profile[SECRET_KEY]);
+                if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))) {
+                    String[] profile = this.profiles.get(Menu.getEnabledProfile());
+                    pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
+                    byte[] signedRequest = Utility.signRequest(messageInfo,
+                            helpers,
+                            profile[SERVICE],
+                            profile[REGION],
+                            profile[ACCESS_KEY],
+                            profile[SECRET_KEY]);
 
-                messageInfo.setRequest(signedRequest);
+                    messageInfo.setRequest(signedRequest);
 
+                }
             }
         }
-
 
     }
 
