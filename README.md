@@ -1,5 +1,5 @@
 # AWSSigner
-Burp Extension for AWS Signing 
+Burp Extension for AWS Sigv4 Signing 
 
 Add your Access Key, Secret Key, Region, and Service to the properties in the extension tab. 
 
