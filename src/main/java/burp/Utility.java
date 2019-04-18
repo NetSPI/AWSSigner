@@ -6,6 +6,7 @@ import com.google.common.hash.Hashing;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -80,7 +81,21 @@ public class Utility {
             payloadHash = Hashing.sha256().hashString("", StandardCharsets.UTF_8).toString().toLowerCase();
         }
 
-        String canonicalURI = requestInfo.getUrl().getPath();
+        String canonicalUri = requestInfo.getUrl().getPath();
+
+        // URI encode all path segments
+        String[] segments = canonicalUri.split("/");
+        String[] encodedSegments = new String[segments.length];
+        for (int i=0; i<segments.length; i++) {
+            encodedSegments[i] = URLEncoder.encode(segments[i], StandardCharsets.UTF_8.toString());
+        }
+
+        String encodedCanonicalUri = String.join("/", encodedSegments);
+
+        // Replace characters we might have lost in the split
+        if (canonicalUri.charAt(canonicalUri.length()-1) == '/' && canonicalUri.length() > 1) {
+            encodedCanonicalUri = encodedCanonicalUri + "/";
+        }
 
         String canonicalQueryString = requestInfo.getUrl().getQuery();
 
@@ -90,8 +105,9 @@ public class Utility {
 
         canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F");
 
-        String canonicalRequest  = requestInfo.getMethod() + '\n' + canonicalURI + '\n' + canonicalQueryString + '\n' +
+        String canonicalRequest  = requestInfo.getMethod() + '\n' + encodedCanonicalUri + '\n' + canonicalQueryString + '\n' +
                 canonicalHeaders +'\n' + signedHeaders + '\n' + payloadHash;
+
 
         String credScope = dateStampString + '/' + region + '/' + service + '/' + "aws4_request";
 
