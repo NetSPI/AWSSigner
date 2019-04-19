@@ -93,7 +93,7 @@ public class Utility {
         String encodedCanonicalUri = String.join("/", encodedSegments);
 
         // Replace characters we might have lost in the split
-        if (canonicalUri.charAt(canonicalUri.length()-1) == '/' && canonicalUri.length() > 1) {
+        if (canonicalUri.charAt(canonicalUri.length()-1) == '/') {
             encodedCanonicalUri = encodedCanonicalUri + "/";
         }
 
