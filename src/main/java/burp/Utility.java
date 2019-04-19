@@ -6,6 +6,7 @@ import com.google.common.hash.Hashing;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -82,9 +83,12 @@ public class Utility {
         }
 
         String canonicalUri = requestInfo.getUrl().getPath();
+        URI uri = new URI(canonicalUri);
+        uri = uri.normalize();
+        String path = uri.getPath();
 
         // URI encode all path segments
-        String[] segments = canonicalUri.split("/");
+        String[] segments = path.split("/");
         String[] encodedSegments = new String[segments.length];
         for (int i=0; i<segments.length; i++) {
             encodedSegments[i] = URLEncoder.encode(segments[i], StandardCharsets.UTF_8.toString());
@@ -93,7 +97,7 @@ public class Utility {
         String encodedCanonicalUri = String.join("/", encodedSegments);
 
         // Replace characters we might have lost in the split
-        if (canonicalUri.charAt(canonicalUri.length()-1) == '/') {
+        if (path.charAt(path.length()-1) == '/') {
             encodedCanonicalUri = encodedCanonicalUri + "/";
         }
 
