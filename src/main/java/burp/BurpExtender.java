@@ -20,8 +20,10 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private JPanel panel;
     private JTextField accessKey;
     private JTextField secretKey;
+    private JTextField token;
     private JTextField region;
     private JTextField service;
+    private JCheckBox useToken;
 
     private JComboBox profileComboBox;
     private int numProfiles = 0;
@@ -34,6 +36,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private int SECRET_KEY = 1;
     private int REGION = 2;
     private int SERVICE = 3;
+    private int TOKEN = 4;
+    private int USE_TOKEN = 5;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
@@ -73,7 +77,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
             // If there is already an add profile button, start creating profiles
             numProfiles++;
             profileComboBox.insertItemAt(new AWSSignerMenuItem("Profile " + numProfiles, numProfiles), boxSize - 1);
-            profiles.put(numProfiles, new String[]{"", "", "", ""});
+            profiles.put(numProfiles, new String[]{"", "", "", "", "", ""});
             profileComboBox.setSelectedIndex(boxSize - 1);
             clearProfile();
 
@@ -85,15 +89,19 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         // Reset text fields
         this.accessKey.setText("");
         this.secretKey.setText("");
+        this.token.setText("");
         this.region.setText("");
         this.service.setText("");
+        this.useToken.setSelected(false);
     }
 
     public void populateProfile(int profile) {
         this.accessKey.setText(this.profiles.get(profile)[ACCESS_KEY]);
         this.secretKey.setText(this.profiles.get(profile)[SECRET_KEY]);
+        this.token.setText(this.profiles.get(profile)[TOKEN]);
         this.region.setText(this.profiles.get(profile)[REGION]);
         this.service.setText(this.profiles.get(profile)[SERVICE]);
+        this.useToken.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[USE_TOKEN]));
     }
 
     public void setupTab() {
@@ -137,7 +145,9 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                         new String[]{accessKey.getText(),
                                 secretKey.getText(),
                                 region.getText(),
-                                service.getText()});
+                                service.getText(),
+                                token.getText(),
+                                String.valueOf(useToken.isSelected())});
             }
 
             @Override
@@ -278,12 +288,24 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                 if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))) {
                     String[] profile = this.profiles.get(Menu.getEnabledProfile());
                     pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
-                    byte[] signedRequest = Utility.signRequest(messageInfo,
-                            helpers,
-                            profile[SERVICE],
-                            profile[REGION],
-                            profile[ACCESS_KEY],
-                            profile[SECRET_KEY]);
+                    byte[] signedRequest;
+                    if (Boolean.parseBoolean(profile[USE_TOKEN])) {
+                        signedRequest = Utility.signRequest(messageInfo,
+                                helpers,
+                                profile[SERVICE],
+                                profile[REGION],
+                                profile[ACCESS_KEY],
+                                profile[SECRET_KEY],
+                                profile[TOKEN]);
+                    } else {
+                        signedRequest = Utility.signRequest(messageInfo,
+                                helpers,
+                                profile[SERVICE],
+                                profile[REGION],
+                                profile[ACCESS_KEY],
+                                profile[SECRET_KEY],
+                                "");
+                    }
 
                     messageInfo.setRequest(signedRequest);
 
@@ -309,7 +331,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
      */
     private void $$$setupUI$$$() {
         panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel.setLayout(new GridLayoutManager(9, 2, new Insets(0, 0, 0, 0), -1, -1));
         final JLabel label1 = new JLabel();
         label1.setText("Access Key: ");
         panel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -318,20 +340,25 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         final JLabel label2 = new JLabel();
         label2.setText("Secret Key:");
         panel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label6 = new JLabel();
+        label6.setText("Session Token:");
+        panel.add(label6, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         label3.setText("Region: ");
-        panel.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel.add(label3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label4 = new JLabel();
         label4.setText("Service: ");
-        panel.add(label4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel.add(label4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         secretKey = new JTextField();
         panel.add(secretKey, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        token = new JTextField();
+        panel.add(token, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         region = new JTextField();
-        panel.add(region, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel.add(region, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         service = new JTextField();
-        panel.add(service, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel.add(service, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel.add(spacer1, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel.add(spacer1, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("Profile:");
         panel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -341,13 +368,16 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         panel.add(profileComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         saveProfileButton = new JButton();
         saveProfileButton.setText("Save Profile");
-        panel.add(saveProfileButton, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        useToken = new JCheckBox();
+        useToken.setLabel("Use session token?");
+        panel.add(useToken, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel.add(saveProfileButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel1, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel.add(panel1, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel2, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel.add(panel2, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         deleteProfileButton = new JButton();
         deleteProfileButton.setText("Delete Profile");
         panel2.add(deleteProfileButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
