@@ -6,6 +6,7 @@ import com.google.common.hash.Hashing;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,10 +15,20 @@ import java.util.regex.Pattern;
 
 public class Utility {
 
-    public static byte[] signRequest(IHttpRequestResponse messageInfo, IExtensionHelpers helpers, String service, String region, String accessKey, String secretKey) throws Exception {
+    public static byte[] signRequest(IHttpRequestResponse messageInfo,
+                                     IExtensionHelpers helpers,
+                                     String service,
+                                     String region,
+                                     String accessKey,
+                                     String secretKey,
+                                     String token) throws Exception {
         IRequestInfo requestInfo = helpers.analyzeRequest(messageInfo);
 
         List<String> headers = requestInfo.getHeaders();
+        if (!token.isEmpty()) {
+            headers.add("X-Amz-Security-Token: " + token);
+
+        }
         List<String> newHeaders = new ArrayList<>(headers);
         headers.remove(0);
 
@@ -25,6 +36,7 @@ public class Utility {
 
         String authHeader = "";
         String amzDate = "";
+        String toSign = "";
 
         for (String header : headers) {
             if (header.toLowerCase().startsWith("authorization:")){
@@ -53,6 +65,9 @@ public class Utility {
         headerMap.put("x-amz-date",amzdate);
 
         String signedHeaders = getSignedHeaders(headerMap.get("authorization"));
+        if (!token.isEmpty()) {
+            signedHeaders = signedHeaders + ";x-amz-security-token";
+        }
 
         String[] signedHeaderArray = signedHeaders.split(";");
 
@@ -92,7 +107,6 @@ public class Utility {
 
         String canonicalRequest  = requestInfo.getMethod() + '\n' + canonicalURI + '\n' + canonicalQueryString + '\n' +
                 canonicalHeaders +'\n' + signedHeaders + '\n' + payloadHash;
-
         String credScope = dateStampString + '/' + region + '/' + service + '/' + "aws4_request";
 
         String algorithm = "AWS4-HMAC-SHA256";
