@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
@@ -24,6 +25,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private JTextField region;
     private JTextField service;
     private JCheckBox useToken;
+    private JCheckBox dynamicRegionAndService;
 
     private JComboBox profileComboBox;
     private int numProfiles = 0;
@@ -287,28 +289,61 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
                 if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))) {
                     String[] profile = this.profiles.get(Menu.getEnabledProfile());
-                    pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
                     byte[] signedRequest;
-                    if (Boolean.parseBoolean(profile[USE_TOKEN])) {
-                        signedRequest = Utility.signRequest(messageInfo,
-                                helpers,
-                                profile[SERVICE],
-                                profile[REGION],
-                                profile[ACCESS_KEY],
-                                profile[SECRET_KEY],
-                                profile[TOKEN]);
+
+                    if (dynamicRegionAndService.isSelected()) {
+                        String region = "";
+                        String service = "";
+                        for(String header : headers) {
+                            if (header.toLowerCase().startsWith("authorization:")){
+                                String[] splitCredential = header.split("=")[1].split("/");
+                                region = splitCredential[2];
+                                service = splitCredential[3];
+                            }
+                        }
+                        pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
+                        if (Boolean.parseBoolean(profile[USE_TOKEN])) {
+                            signedRequest = Utility.signRequest(messageInfo,
+                                    helpers,
+                                    service,
+                                    region,
+                                    profile[ACCESS_KEY],
+                                    profile[SECRET_KEY],
+                                    profile[TOKEN]);
+                        } else {
+                            signedRequest = Utility.signRequest(messageInfo,
+                                    helpers,
+                                    service,
+                                    region,
+                                    profile[ACCESS_KEY],
+                                    profile[SECRET_KEY],
+                                    "");
+                        }
+                        messageInfo.setRequest(signedRequest);
+                    } else if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains(profile[SERVICE]))) &&
+                            headers.stream().anyMatch((str -> str.trim().toLowerCase().contains(profile[REGION])))) {
+                        pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
+                        if (Boolean.parseBoolean(profile[USE_TOKEN])) {
+                            signedRequest = Utility.signRequest(messageInfo,
+                                    helpers,
+                                    profile[SERVICE],
+                                    profile[REGION],
+                                    profile[ACCESS_KEY],
+                                    profile[SECRET_KEY],
+                                    profile[TOKEN]);
+                        } else {
+                            signedRequest = Utility.signRequest(messageInfo,
+                                    helpers,
+                                    profile[SERVICE],
+                                    profile[REGION],
+                                    profile[ACCESS_KEY],
+                                    profile[SECRET_KEY],
+                                    "");
+                        }
+                        messageInfo.setRequest(signedRequest);
                     } else {
-                        signedRequest = Utility.signRequest(messageInfo,
-                                helpers,
-                                profile[SERVICE],
-                                profile[REGION],
-                                profile[ACCESS_KEY],
-                                profile[SECRET_KEY],
-                                "");
+                        messageInfo.setRequest(messageInfo.getRequest());
                     }
-
-                    messageInfo.setRequest(signedRequest);
-
                 }
             }
         }
@@ -371,6 +406,9 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         useToken = new JCheckBox();
         useToken.setLabel("Use session token?");
         panel.add(useToken, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        dynamicRegionAndService = new JCheckBox();
+        dynamicRegionAndService.setLabel("Dynamically load region and service from request?");
+        panel.add(dynamicRegionAndService, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         panel.add(saveProfileButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
