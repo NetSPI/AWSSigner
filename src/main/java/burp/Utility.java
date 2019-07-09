@@ -26,7 +26,17 @@ public class Utility {
 
         List<String> headers = requestInfo.getHeaders();
         if (!token.isEmpty()) {
-            headers.add("X-Amz-Security-Token: " + token);
+            boolean tokenExists = false;
+            int i = 0;
+            for (String header : headers) {
+                if (header.toLowerCase().startsWith("x-amz-security-token")) {
+                    headers.set(i, "X-Amz-Security-Token: " + token);
+                    tokenExists = true;
+                }
+                i++;
+            }
+            if (!tokenExists)
+                headers.add("X-Amz-Security-Token: " + token);
         }
         List<String> newHeaders = new ArrayList<>(headers);
         headers.remove(0);
@@ -43,20 +53,7 @@ public class Utility {
             if (header.toLowerCase().startsWith("x-amz-date:")){
                 amzDate = header;
             }
-            if (header.toLowerCase().startsWith("credential") && !header.contains(service)) {
-                try {
-                    headers.remove("X-Amz-Security-Token: " + token);
-                } catch (Exception e) {
-                    continue;
-                }
-                byte[] request = messageInfo.getRequest();
-                String body = "";
-                if (!requestInfo.getMethod().equals("GET")){
-                    int bodyOffset = requestInfo.getBodyOffset();
-                    body = new String(request, bodyOffset, request.length - bodyOffset, "UTF-8").trim();
-                }
-                return helpers.buildHttpMessage(headers, body.getBytes());
-            }
+
             String[] headerPair = header.split(":",2);
             headerMap.put(headerPair[0].trim(),headerPair[1].trim());
         }
@@ -77,7 +74,7 @@ public class Utility {
         headerMap.put("x-amz-date",amzdate);
 
         String signedHeaders = getSignedHeaders(headerMap.get("authorization"));
-        if (!token.isEmpty()) {
+        if (!token.isEmpty() && !signedHeaders.contains("x-amz-security-token")) {
             signedHeaders = signedHeaders + ";x-amz-security-token";
         }
 
