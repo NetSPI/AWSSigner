@@ -343,7 +343,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                                     region,
                                     profile[ACCESS_KEY],
                                     profile[SECRET_KEY],
-                                    profile[TOKEN]);
+                                    profile[TOKEN],
+                                    pw);
                         } else {
                             signedRequest = Utility.signRequest(messageInfo,
                                     helpers,
@@ -351,7 +352,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                                     region,
                                     profile[ACCESS_KEY],
                                     profile[SECRET_KEY],
-                                    "");
+                                    "",
+                                    pw);
                         }
                         messageInfo.setRequest(signedRequest);
                     } else if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains(profile[SERVICE]))) &&
@@ -364,7 +366,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                                     profile[REGION],
                                     profile[ACCESS_KEY],
                                     profile[SECRET_KEY],
-                                    profile[TOKEN]);
+                                    profile[TOKEN],
+                                    pw);
                         } else {
                             signedRequest = Utility.signRequest(messageInfo,
                                     helpers,
@@ -372,7 +375,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                                     profile[REGION],
                                     profile[ACCESS_KEY],
                                     profile[SECRET_KEY],
-                                    "");
+                                    "",
+                                    pw);
                         }
                         messageInfo.setRequest(signedRequest);
                     } else {
@@ -439,13 +443,13 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         saveProfileButton = new JButton();
         saveProfileButton.setText("Save Profile");
         useToken = new JCheckBox();
-        useToken.setLabel("Use session token?");
+        useToken.setText("Use session token?");
         panel.add(useToken, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         dynamicRegionAndService = new JCheckBox();
-        dynamicRegionAndService.setLabel("Dynamically load region and service from request?");
+        dynamicRegionAndService.setText("Dynamically load region and service from request?");
         panel.add(dynamicRegionAndService, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         useDefaultProfile = new JCheckBox();
-        useDefaultProfile.setLabel("Use default credentials from ~" + File.separator + ".aws" + File.separator + "credentials?");
+        useDefaultProfile.setText("Use default credentials from ~" + File.separator + ".aws" + File.separator + "credentials?");
         panel.add(useDefaultProfile, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         panel.add(saveProfileButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
