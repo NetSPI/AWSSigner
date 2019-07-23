@@ -304,24 +304,28 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                     byte[] signedRequest;
                     if (useDefaultProfile.isSelected() && profile[ACCESS_KEY].isEmpty()) {
                         String currentUsersHomeDir = System.getProperty("user.home");
-                        File f = new File(currentUsersHomeDir + "/.aws/credentials");
-                        BufferedReader br = new BufferedReader(new FileReader(f));
-                        String st;
-                        int i = -1;
-                        while ((st = br.readLine()) != null) {
-                            if (st.equalsIgnoreCase("[default]")) {
-                                i = 0;
-                            } else if (i == 0 && st.startsWith("aws_access_key_id")) {
-                                profile[ACCESS_KEY] = st.split(" ")[2];
-                            } else if (i == 0 && st.startsWith("aws_secret_access_key")) {
-                                profile[SECRET_KEY] = st.split(" ")[2];
-                            } else if (i == 0 && st.startsWith("aws_security_token")) {
-                                profile[TOKEN] = st.split(" ")[2];
-                            } else {
-                                i = -1;
+                        try {
+                            File f = new File(currentUsersHomeDir + "/.aws/credentials");
+                            BufferedReader br = new BufferedReader(new FileReader(f));
+                            String st;
+                            int i = -1;
+                            while ((st = br.readLine()) != null) {
+                                if (st.equalsIgnoreCase("[default]")) {
+                                    i = 0;
+                                } else if (i == 0 && st.startsWith("aws_access_key_id")) {
+                                    profile[ACCESS_KEY] = st.split(" ")[2];
+                                } else if (i == 0 && st.startsWith("aws_secret_access_key")) {
+                                    profile[SECRET_KEY] = st.split(" ")[2];
+                                } else if (i == 0 && st.startsWith("aws_security_token")) {
+                                    profile[TOKEN] = st.split(" ")[2];
+                                } else {
+                                    i = -1;
+                                }
                             }
+                            br.close();
+                        } catch (Exception e) {
+                            pw.println("Error reading credentials file: " + e.getMessage());
                         }
-                        br.close();
                     }
                     if (dynamicRegionAndService.isSelected()) {
                         String region = "";
