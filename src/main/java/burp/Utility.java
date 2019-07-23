@@ -8,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.Collator;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,7 +22,8 @@ public class Utility {
                                      String region,
                                      String accessKey,
                                      String secretKey,
-                                     String token) throws Exception {
+                                     String token,
+                                     PrintWriter pw) throws Exception {
         IRequestInfo requestInfo = helpers.analyzeRequest(messageInfo);
 
         List<String> headers = requestInfo.getHeaders();
@@ -111,8 +113,11 @@ public class Utility {
         if (Strings.isNullOrEmpty(canonicalQueryString)){
             canonicalQueryString = "";
         }
+        String[] sorted = canonicalQueryString.split("&");
+        Arrays.sort(sorted);
+        canonicalQueryString = String.join("&",sorted);
 
-        canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F");
+        canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F").replace(" ", "%20");
 
         String canonicalRequest  = requestInfo.getMethod() + '\n' + canonicalURI + '\n' + canonicalQueryString + '\n' +
                 canonicalHeaders +'\n' + signedHeaders + '\n' + payloadHash;
@@ -121,7 +126,8 @@ public class Utility {
         String algorithm = "AWS4-HMAC-SHA256";
 
         String stringToSign = algorithm + '\n' + amzdate + '\n' + credScope + '\n' + Hashing.sha256().hashString(canonicalRequest, StandardCharsets.UTF_8).toString().toLowerCase();
-
+        //pw.println(stringToSign);
+        //pw.println(canonicalRequest);
         byte[] signingKey = getSignatureKey(secretKey, dateStampString, region, service);
 
         String signature = DatatypeConverter.printHexBinary(HmacSHA256(stringToSign, signingKey));
