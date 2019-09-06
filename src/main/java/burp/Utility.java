@@ -155,7 +155,7 @@ public class Utility {
             }
             if (param.length > 1) {
                 sorted[i] = String.join("=", param);
-            } else if (param.length == 1){
+            } else if (param.length == 1 && !param[0].isEmpty()){
                 sorted[i] = param[0] + "=";
             }
         }
@@ -178,8 +178,8 @@ public class Utility {
         String algorithm = "AWS4-HMAC-SHA256";
 
         String stringToSign = algorithm + '\n' + amzdate + '\n' + credScope + '\n' + Hashing.sha256().hashString(canonicalRequest, StandardCharsets.UTF_8).toString().toLowerCase();
-        //pw.println(canonicalRequest);
-        //pw.println(stringToSign);
+        pw.println(canonicalRequest);
+        pw.println(stringToSign);
         byte[] signingKey = getSignatureKey(secretKey, dateStampString, region, service);
 
         String signature = DatatypeConverter.printHexBinary(HmacSHA256(stringToSign, signingKey));
