@@ -109,9 +109,14 @@ public class Utility {
         }
 
         String canonicalUri = requestInfo.getUrl().getPath();
+        //pw.println(canonicalUri);
         URI uri = new URI(canonicalUri);
         uri = uri.normalize();
         String path = uri.getPath();
+        if(canonicalUri.contains("%")) {
+            path = uri.getRawPath();
+        }
+        //pw.println(path);
         String[] segments = path.split("/");
         String[] encodedSegments = new String[segments.length];
         for (int i=0; i<segments.length; i++) {
@@ -126,25 +131,52 @@ public class Utility {
         }
 
         String canonicalQueryString = requestInfo.getUrl().getQuery();
-
         if (Strings.isNullOrEmpty(canonicalQueryString)){
             canonicalQueryString = "";
         }
-        String[] sorted = canonicalQueryString.split("&");
 
+        String[] sorted = canonicalQueryString.split("&");
         Arrays.sort(sorted);
-        canonicalQueryString = String.join("&",sorted);
-        canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F").replace(" ", "%20");
+
+        for (int i = 0; i < sorted.length; ++i) {
+            String[] param = sorted[i].split("=");
+            for (int j = 0; j < param.length; ++j) {
+                try {
+                    param[j] = URLEncoder.encode(param[j], StandardCharsets.UTF_8.toString())
+                            // OAuth encodes some characters differently:
+                            .replace("+", "%20").replace("*", "%2A")
+                            .replace("%7E", "~").replace("%25", "%");
+                    // This could be done faster with more hand-crafted code.
+                } catch (Exception e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+            }
+            sorted[i] = String.join("=", param);
+        }
+        canonicalQueryString = String.join("&", sorted);
+
+        pw.println(canonicalQueryString);
+
+        String[] cleanup = canonicalQueryString.split("");
+        for (int i = 0; i < cleanup.length; ++i) {
+            if (cleanup[i].equals("%")) {
+                cleanup[i+1] = cleanup[i+1].toUpperCase();
+                cleanup[i+2] = cleanup[i+2].toUpperCase();
+            }
+        }
+        canonicalQueryString = String.join("", cleanup);
+
+        pw.println(canonicalQueryString);
+        //canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F").replace(" ", "%20");
 
         String canonicalRequest  = requestInfo.getMethod() + '\n' + encodedCanonicalUri + '\n' + canonicalQueryString + '\n' +
                 canonicalHeaders +'\n' + signedHeaders + '\n' + payloadHash;
         String credScope = dateStampString + '/' + region + '/' + service + '/' + "aws4_request";
-
         String algorithm = "AWS4-HMAC-SHA256";
 
         String stringToSign = algorithm + '\n' + amzdate + '\n' + credScope + '\n' + Hashing.sha256().hashString(canonicalRequest, StandardCharsets.UTF_8).toString().toLowerCase();
+        pw.println(canonicalRequest);
         //pw.println(stringToSign);
-        //pw.println(canonicalRequest);
         byte[] signingKey = getSignatureKey(secretKey, dateStampString, region, service);
 
         String signature = DatatypeConverter.printHexBinary(HmacSHA256(stringToSign, signingKey));
