@@ -125,7 +125,7 @@ public class Utility {
         }
 
         String encodedCanonicalUri = String.join("/", encodedSegments);
-        pw.println(encodedCanonicalUri);
+        //pw.println(encodedCanonicalUri);
 
         // Replace characters we might have lost in the split
         if (path.charAt(path.length()-1) == '/') {
@@ -174,7 +174,7 @@ public class Utility {
         String algorithm = "AWS4-HMAC-SHA256";
 
         String stringToSign = algorithm + '\n' + amzdate + '\n' + credScope + '\n' + Hashing.sha256().hashString(canonicalRequest, StandardCharsets.UTF_8).toString().toLowerCase();
-        pw.println(canonicalRequest);
+        //pw.println(canonicalRequest);
         //pw.println(stringToSign);
         byte[] signingKey = getSignatureKey(secretKey, dateStampString, region, service);
 
