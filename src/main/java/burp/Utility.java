@@ -155,7 +155,7 @@ public class Utility {
             }
             if (param.length > 1) {
                 sorted[i] = String.join("=", param);
-            } else if (param.length == 1){
+            } else if (param.length == 1 && !param[0].isEmpty()){
                 sorted[i] = param[0] + "=";
             }
         }
