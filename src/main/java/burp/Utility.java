@@ -153,7 +153,11 @@ public class Utility {
                     throw new RuntimeException(e.getMessage(), e);
                 }
             }
-            sorted[i] = String.join("=", param);
+            if (param.length > 1) {
+                sorted[i] = String.join("=", param);
+            } else if (param.length == 1){
+                sorted[i] = param[0] + "=";
+            }
         }
         canonicalQueryString = String.join("&", sorted);
 
