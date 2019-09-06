@@ -116,14 +116,16 @@ public class Utility {
         if(canonicalUri.contains("%")) {
             path = uri.getRawPath();
         }
-        //pw.println(path);
         String[] segments = path.split("/");
         String[] encodedSegments = new String[segments.length];
         for (int i=0; i<segments.length; i++) {
-            encodedSegments[i] = URLEncoder.encode(segments[i], StandardCharsets.UTF_8.toString());
+            encodedSegments[i] = URLEncoder.encode(segments[i], StandardCharsets.UTF_8.toString())
+                    .replace("+", "%20").replace("*", "%2A")
+                    .replace("%7E", "~");
         }
 
         String encodedCanonicalUri = String.join("/", encodedSegments);
+        pw.println(encodedCanonicalUri);
 
         // Replace characters we might have lost in the split
         if (path.charAt(path.length()-1) == '/') {
@@ -155,8 +157,6 @@ public class Utility {
         }
         canonicalQueryString = String.join("&", sorted);
 
-        pw.println(canonicalQueryString);
-
         String[] cleanup = canonicalQueryString.split("");
         for (int i = 0; i < cleanup.length; ++i) {
             if (cleanup[i].equals("%")) {
@@ -166,7 +166,6 @@ public class Utility {
         }
         canonicalQueryString = String.join("", cleanup);
 
-        pw.println(canonicalQueryString);
         //canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F").replace(" ", "%20");
 
         String canonicalRequest  = requestInfo.getMethod() + '\n' + encodedCanonicalUri + '\n' + canonicalQueryString + '\n' +
