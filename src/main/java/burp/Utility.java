@@ -210,7 +210,7 @@ public class Utility {
 
         String signedHeaders = "";
 
-        Pattern pattern = Pattern.compile("SignedHeaders=(.*?),");
+        Pattern pattern = Pattern.compile("SignedHeaders=(.*?)[,\\s]");
 
         Matcher matcher = pattern.matcher(authHeader);
         if (matcher.find()){
