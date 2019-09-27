@@ -90,8 +90,12 @@ public class Utility {
 
         StringBuilder canonicalHeaders = new StringBuilder();
 
-        for (String signedHeader : signedHeaderList){
-            canonicalHeaders.append(signedHeader.toLowerCase()).append(':').append(headerMap.get(signedHeader)).append('\n');
+        for (String signedHeader : signedHeaderList) {
+            if (headerMap.containsKey(signedHeader)) {
+                canonicalHeaders.append(signedHeader.toLowerCase()).append(':').append(headerMap.get(signedHeader)).append('\n');
+            } else {
+                pw.println("Warning: SignedHeader '" + signedHeader + "' does not exist in request headers.");
+            }
         }
 
         byte[] request = messageInfo.getRequest();
