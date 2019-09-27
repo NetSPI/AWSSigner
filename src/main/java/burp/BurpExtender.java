@@ -327,6 +327,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                             pw.println("Error reading credentials file: " + e.getMessage());
                         }
                     }
+
                     if (dynamicRegionAndService.isSelected()) {
                         String region = "";
                         String service = "";
@@ -360,8 +361,10 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                                     pw);
                         }
                         messageInfo.setRequest(signedRequest);
-                    } else if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains(profile[SERVICE]))) &&
-                            headers.stream().anyMatch((str -> str.trim().toLowerCase().contains(profile[REGION])))) {
+                    } else if (!profile[SERVICE].equals("") && !profile[REGION].equals("") &&
+                        // Removed lower case for service and region since the signature is case-sensitive
+                        headers.stream().anyMatch((str -> str.trim().contains(profile[SERVICE]))) &&
+                        headers.stream().anyMatch((str -> str.trim().contains(profile[REGION])))) {
                         pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
                         if (Boolean.parseBoolean(profile[USE_TOKEN])) {
                             signedRequest = Utility.signRequest(messageInfo,
