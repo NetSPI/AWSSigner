@@ -10,11 +10,10 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.Collator;
+import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Utility {
 
@@ -93,15 +92,29 @@ public class Utility {
         for (String signedHeader : signedHeaderList){
             canonicalHeaders.append(signedHeader.toLowerCase()).append(':').append(headerMap.get(signedHeader)).append('\n');
         }
-
+        //pw.println(canonicalHeaders.toString());
         byte[] request = messageInfo.getRequest();
         String body = "";
+        String notUnicode = "[^\\u0000-\\u007F]+";
         String payloadHash;
 
         if (!requestInfo.getMethod().equals("GET")){
 
             int bodyOffset = requestInfo.getBodyOffset();
-            body = new String(request, bodyOffset, request.length - bodyOffset, "UTF-8").trim();
+            body = hexToString(bytesToHex(Arrays.copyOfRange(request, bodyOffset, request.length)));
+            if(!body.matches(notUnicode)) {
+                char[] chars = body.toCharArray();
+                String sanitize = "";
+                for (int i = 0; i < chars.length; ++i) {
+                    String test = Character.toString(chars[i]);
+                    if (Pattern.matches(notUnicode, test)) {
+                        sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
+                    } else {
+                        sanitize = sanitize.concat(test);
+                    }
+                }
+                body = sanitize;
+            }
             payloadHash = Hashing.sha256().hashString(body, StandardCharsets.UTF_8).toString().toLowerCase();
 
         } else {
@@ -109,6 +122,19 @@ public class Utility {
         }
 
         String canonicalUri = requestInfo.getUrl().getPath();
+        if(!canonicalUri.matches(notUnicode)) {
+            char[] chars = canonicalUri.toCharArray();
+            String sanitize = "";
+            for (int i = 0; i < chars.length; ++i) {
+                String test = Character.toString(chars[i]);
+                if (Pattern.matches(notUnicode, test)) {
+                    sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
+                } else {
+                    sanitize = sanitize.concat(test);
+                }
+            }
+            canonicalUri = sanitize;
+        }
         //pw.println(canonicalUri);
         URI uri = new URI(canonicalUri);
         uri = uri.normalize();
@@ -135,6 +161,19 @@ public class Utility {
         String canonicalQueryString = requestInfo.getUrl().getQuery();
         if (Strings.isNullOrEmpty(canonicalQueryString)){
             canonicalQueryString = "";
+        }
+        if(!canonicalQueryString.matches(notUnicode)) {
+            char[] chars = canonicalQueryString.toCharArray();
+            String sanitize = "";
+            for (int i = 0; i < chars.length; ++i) {
+                String test = Character.toString(chars[i]);
+                if (Pattern.matches(notUnicode, test)) {
+                    sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
+                } else {
+                    sanitize = sanitize.concat(test);
+                }
+            }
+            canonicalQueryString = sanitize;
         }
 
         String[] sorted = canonicalQueryString.split("&");
@@ -169,7 +208,7 @@ public class Utility {
             }
         }
         canonicalQueryString = String.join("", cleanup);
-
+        //pw.println(canonicalQueryString);
         //canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F").replace(" ", "%20");
 
         String canonicalRequest  = requestInfo.getMethod() + '\n' + encodedCanonicalUri + '\n' + canonicalQueryString + '\n' +
@@ -178,8 +217,8 @@ public class Utility {
         String algorithm = "AWS4-HMAC-SHA256";
 
         String stringToSign = algorithm + '\n' + amzdate + '\n' + credScope + '\n' + Hashing.sha256().hashString(canonicalRequest, StandardCharsets.UTF_8).toString().toLowerCase();
-        pw.println(canonicalRequest);
-        pw.println(stringToSign);
+        //pw.println(canonicalRequest);
+        //pw.println(stringToSign);
         byte[] signingKey = getSignatureKey(secretKey, dateStampString, region, service);
 
         String signature = DatatypeConverter.printHexBinary(HmacSHA256(stringToSign, signingKey));
@@ -187,6 +226,19 @@ public class Utility {
         newHeaders.add("Authorization: " + algorithm + ' ' + "Credential=" + accessKey + '/' + credScope + ", " + "SignedHeaders=" +
                 signedHeaders + ", " + "Signature=" + signature.toLowerCase());
         newHeaders.add("X-Amz-Date: " + amzdate);
+        if(!newHeaders.get(0).matches(notUnicode)) {
+            char[] chars = newHeaders.get(0).toCharArray();
+            String sanitize = "";
+            for (int i = 0; i < chars.length; ++i) {
+                String test = Character.toString(chars[i]);
+                if (Pattern.matches(notUnicode, test)) {
+                    sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
+                } else {
+                    sanitize = sanitize.concat(test);
+                }
+            }
+            newHeaders.set(0, sanitize);
+        }
 
         return helpers.buildHttpMessage(newHeaders, body.getBytes());
     }
@@ -219,5 +271,26 @@ public class Utility {
 
         return  signedHeaders;
 
+    }
+    private static String bytesToHex(byte[] bytes) {
+        char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+        char[] hexChars = new char[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
+    private static String hexToString(String hex){
+        StringBuilder sb = new StringBuilder();
+        StringBuilder temp = new StringBuilder();
+        for( int i=0; i<hex.length()-1; i+=2 ){
+            String output = hex.substring(i, (i + 2));
+            int decimal = Integer.parseInt(output, 16);
+            sb.append((char)decimal);
+            temp.append(decimal);
+        }
+        return sb.toString();
     }
 }
