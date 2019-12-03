@@ -96,6 +96,7 @@ public class Utility {
                 pw.println("Warning: SignedHeader '" + signedHeader + "' does not exist in request headers.");
             }
         }
+        String signedHeadersSorted = String.join(";", signedHeaderList);
         //pw.println(canonicalHeaders.toString());
         byte[] request = messageInfo.getRequest();
         String body = "";
@@ -216,7 +217,7 @@ public class Utility {
         //canonicalQueryString = canonicalQueryString.replace(":","%3A").replace("/","%2F").replace(" ", "%20");
 
         String canonicalRequest  = requestInfo.getMethod() + '\n' + encodedCanonicalUri + '\n' + canonicalQueryString + '\n' +
-                canonicalHeaders +'\n' + signedHeaders + '\n' + payloadHash;
+                canonicalHeaders +'\n' + signedHeadersSorted + '\n' + payloadHash;
         String credScope = dateStampString + '/' + region + '/' + service + '/' + "aws4_request";
         String algorithm = "AWS4-HMAC-SHA256";
 
@@ -228,7 +229,7 @@ public class Utility {
         String signature = DatatypeConverter.printHexBinary(HmacSHA256(stringToSign, signingKey));
 
         newHeaders.add("Authorization: " + algorithm + ' ' + "Credential=" + accessKey + '/' + credScope + ", " + "SignedHeaders=" +
-                signedHeaders + ", " + "Signature=" + signature.toLowerCase());
+                signedHeadersSorted + ", " + "Signature=" + signature.toLowerCase());
         newHeaders.add("X-Amz-Date: " + amzdate);
         if(!newHeaders.get(0).matches(notUnicode)) {
             char[] chars = newHeaders.get(0).toCharArray();
