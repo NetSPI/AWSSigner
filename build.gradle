@@ -3,7 +3,6 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-
 repositories {
     mavenCentral()
 }
@@ -12,7 +11,12 @@ dependencies {
     compile 'com.google.guava:guava:23.2-jre'
     compile 'com.intellij:forms_rt:7.0.3'
     compile 'javax.xml.bind:jaxb-api:2.3.0'
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sts
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-sts', version: '1.11.683'
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.228')
+    implementation 'com.amazonaws:aws-java-sdk-sts'
+    testImplementation group: 'junit', name: 'junit', version: '4.11'
 }
 
 def mainClassName = "com.netspi.awssigner.Main"

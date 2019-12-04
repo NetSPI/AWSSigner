@@ -15,18 +15,17 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 
-public class Utility {
+class Utility {
 
-    public static byte[] signRequest(IHttpRequestResponse messageInfo,
-                                     IExtensionHelpers helpers,
-                                     String service,
-                                     String region,
-                                     String accessKey,
-                                     String secretKey,
-                                     String token,
-                                     PrintWriter pw) throws Exception {
+    static byte[] signRequest(IHttpRequestResponse messageInfo,
+                              IExtensionHelpers helpers,
+                              String service,
+                              String region,
+                              String accessKey,
+                              String secretKey,
+                              String token,
+                              PrintWriter pw) throws Exception {
         IRequestInfo requestInfo = helpers.analyzeRequest(messageInfo);
-
         List<String> headers = requestInfo.getHeaders();
         if (!token.isEmpty()) {
             boolean tokenExists = false;
@@ -110,8 +109,8 @@ public class Utility {
             if(!body.matches(notUnicode)) {
                 char[] chars = body.toCharArray();
                 String sanitize = "";
-                for (int i = 0; i < chars.length; ++i) {
-                    String test = Character.toString(chars[i]);
+                for (char aChar : chars) {
+                    String test = Character.toString(aChar);
                     if (Pattern.matches(notUnicode, test)) {
                         sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
                     } else {
@@ -130,8 +129,8 @@ public class Utility {
         if(!canonicalUri.matches(notUnicode)) {
             char[] chars = canonicalUri.toCharArray();
             String sanitize = "";
-            for (int i = 0; i < chars.length; ++i) {
-                String test = Character.toString(chars[i]);
+            for (char aChar : chars) {
+                String test = Character.toString(aChar);
                 if (Pattern.matches(notUnicode, test)) {
                     sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
                 } else {
@@ -170,8 +169,8 @@ public class Utility {
         if(!canonicalQueryString.matches(notUnicode)) {
             char[] chars = canonicalQueryString.toCharArray();
             String sanitize = "";
-            for (int i = 0; i < chars.length; ++i) {
-                String test = Character.toString(chars[i]);
+            for (char aChar : chars) {
+                String test = Character.toString(aChar);
                 if (Pattern.matches(notUnicode, test)) {
                     sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
                 } else {
@@ -234,8 +233,8 @@ public class Utility {
         if(!newHeaders.get(0).matches(notUnicode)) {
             char[] chars = newHeaders.get(0).toCharArray();
             String sanitize = "";
-            for (int i = 0; i < chars.length; ++i) {
-                String test = Character.toString(chars[i]);
+            for (char aChar : chars) {
+                String test = Character.toString(aChar);
                 if (Pattern.matches(notUnicode, test)) {
                     sanitize = sanitize.concat(URLEncoder.encode(test, StandardCharsets.UTF_8.toString()));
                 } else {
@@ -252,11 +251,11 @@ public class Utility {
         String algorithm="HmacSHA256";
         Mac mac = Mac.getInstance(algorithm);
         mac.init(new SecretKeySpec(key, algorithm));
-        return mac.doFinal(data.getBytes("UTF8"));
+        return mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
     }
 
     private static byte[] getSignatureKey(String key, String dateStamp, String regionName, String serviceName) throws Exception {
-        byte[] kSecret = ("AWS4" + key).getBytes("UTF8");
+        byte[] kSecret = ("AWS4" + key).getBytes(StandardCharsets.UTF_8);
         byte[] kDate = HmacSHA256(dateStamp, kSecret);
         byte[] kRegion = HmacSHA256(regionName, kDate);
         byte[] kService = HmacSHA256(serviceName, kRegion);
@@ -289,12 +288,10 @@ public class Utility {
     }
     private static String hexToString(String hex){
         StringBuilder sb = new StringBuilder();
-        StringBuilder temp = new StringBuilder();
         for( int i=0; i<hex.length()-1; i+=2 ){
             String output = hex.substring(i, (i + 2));
             int decimal = Integer.parseInt(output, 16);
             sb.append((char)decimal);
-            temp.append(decimal);
         }
         return sb.toString();
     }
