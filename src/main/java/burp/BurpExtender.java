@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.*;
 
@@ -390,7 +389,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                 String[] save = profiles.get(profileNum);
                 save[ARN] = roleArn.getText();
                 profiles.replace(profileNum, save);
-                createAndPopulateProfile(details, roleArn.getText().split("role/")[1]);
+                createAndPopulateProfile(details, roleArn.getText());
             }
 
             @Override
