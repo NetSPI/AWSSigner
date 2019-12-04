@@ -5,8 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
-import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
+import com.amazonaws.services.securitytoken.model.*;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -22,6 +21,7 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private IExtensionHelpers helpers;
@@ -357,19 +357,27 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                     BasicSessionCredentials awsCreds = new BasicSessionCredentials(profile[ACCESS_KEY], profile[SECRET_KEY], profile[TOKEN]);
                     stsClient = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
                 }
-                AssumeRoleRequest assume = new AssumeRoleRequest().withRoleArn(roleArn.getText()).withRoleSessionName("testing");
-                AssumeRoleResult result = stsClient.assumeRole(assume);
-
+                Credentials creds;
+                if(roleArn.getText().equals("session-token")) {
+                    GetSessionTokenRequest session = new GetSessionTokenRequest();
+                    pw.println("Retrieving session token for " + profile[ACCESS_KEY]);
+                    creds = stsClient.getSessionToken(session).getCredentials();
+                } else {
+                    String uuid = UUID.randomUUID().toString();
+                    AssumeRoleRequest assume = new AssumeRoleRequest().withRoleArn(roleArn.getText()).withRoleSessionName(uuid);
+                    pw.println("Assuming role " + roleArn.getText() + " with role session name " + uuid);
+                    creds = stsClient.assumeRole(assume).getCredentials();
+                }
                 String[] details = new String[]{
-                        result.getCredentials().getAccessKeyId(),       // access key
-                        result.getCredentials().getSecretAccessKey(),   // secret key
-                        "",                                             // region
-                        "",                                             // service
-                        result.getCredentials().getSessionToken(),      // session token
-                        Boolean.toString(true),                      // use token
-                        Boolean.toString(true),                      // use dynamic region and service
-                        Boolean.toString(false),                     // use default credentials
-                        ""};                                            // role ARN
+                        creds.getAccessKeyId(),       // access key
+                        creds.getSecretAccessKey(),   // secret key
+                        "",                           // region
+                        "",                           // service
+                        creds.getSessionToken(),      // session token
+                        Boolean.toString(true),    // use token
+                        Boolean.toString(true),    // use dynamic region and service
+                        Boolean.toString(false),   // use default credentials
+                        ""};                          // role ARN
                 int profileNum = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
                 String[] save = profiles.get(profileNum);
                 save[ARN] = roleArn.getText();
