@@ -1,5 +1,12 @@
 package burp;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
+import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
+import com.amazonaws.services.securitytoken.model.AssumeRoleRequest;
+import com.amazonaws.services.securitytoken.model.AssumeRoleResult;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -7,7 +14,6 @@ import com.intellij.uiDesigner.core.Spacer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.BufferedReader;
@@ -15,10 +21,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.concurrent.*;
+import java.util.Objects;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
-    private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
     private PrintWriter pw;
     private JPanel panel;
@@ -52,7 +57,6 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
-        this.callbacks = callbacks;
         helpers = callbacks.getHelpers();
         this.pw = new PrintWriter(callbacks.getStdout(), true);
 
@@ -75,7 +79,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
     }
 
-    public void createNewProfile() {
+    private void createNewProfile() {
 
         // Add another profile to the combo box, or add the add profile button if it's not already there.
         int boxSize = profileComboBox.getItemCount();
@@ -96,7 +100,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         }
     }
 
-    public void clearProfile() {
+    private void clearProfile() {
         // Reset text fields
         this.accessKey.setText("");
         this.secretKey.setText("");
@@ -109,7 +113,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         this.dynamicRegionAndService.setSelected(false);
     }
 
-    public void populateProfile(int profile) {
+    private void populateProfile(int profile) {
         this.accessKey.setText(this.profiles.get(profile)[ACCESS_KEY]);
         this.secretKey.setText(this.profiles.get(profile)[SECRET_KEY]);
         this.token.setText(this.profiles.get(profile)[TOKEN]);
@@ -122,12 +126,11 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
     }
 
-    public void createAndPopulateProfile(String[] details, String name) {
+    private void createAndPopulateProfile(String[] details, String name) {
         // Add another profile to the combo box, or add the add profile button if it's not already there.
         int boxSize = profileComboBox.getItemCount();
+        // If there's nothing here, just add our add profile button
         if (boxSize == 0) {
-
-            // If there's nothing here, just add our add profile button
             this.profileComboBox.addItem(new AWSSignerMenuItem("Add Profile", 0));
         } else {
             for(int i = 0; i < boxSize; ++i) {
@@ -152,24 +155,21 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         }
     }
 
-    public void setupTab() {
+    private void setupTab() {
         // Set up profiles combobox
-        this.profiles = new HashMap<Integer, String[]>();
+        this.profiles = new HashMap<>();
 
         createNewProfile();
         createNewProfile();
 
-        this.profileComboBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED && !justDeleted) {
-                    int selectedProfile = ((AWSSignerMenuItem) e.getItem()).getProfileNumber();
-                    if (selectedProfile == 0) {
-                        pw.println("Creating new profile...");
-                        createNewProfile();
-                    } else {
-                        populateProfile(selectedProfile);
-                    }
+        this.profileComboBox.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED && !justDeleted) {
+                int selectedProfile = ((AWSSignerMenuItem) e.getItem()).getProfileNumber();
+                if (selectedProfile == 0) {
+                    pw.println("Creating new profile...");
+                    createNewProfile();
+                } else {
+                    populateProfile(selectedProfile);
                 }
             }
         });
@@ -187,7 +187,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                int profile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
+                int profile = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
                 if (useDefaultProfile.isSelected()) {
                     String[] profileToPut = new String[]{"", "", "", "", "",
                             String.valueOf(useToken.isSelected()),
@@ -257,7 +257,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                int profile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
+                int profile = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
                 int index = profileComboBox.getSelectedIndex();
                 pw.println("Deleting profile " + profile + "...");
 
@@ -320,7 +320,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                int profile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
+                int profile = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
                 Menu.setEnabledProfile(profile);
             }
 
@@ -349,43 +349,28 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
             @Override
             public void mouseReleased(MouseEvent e) {
                 String[] profile = profiles.get(Menu.getEnabledProfile());
-                IHttpService service = helpers.buildHttpService("sts.amazonaws.com", 443, true);
-                if(roleArn.getText().length() < 20) {
-                    pw.println("Invalid role ARN");
-                    return;
+                AWSSecurityTokenService stsClient;
+                if(profile[TOKEN].isEmpty()) {
+                    BasicAWSCredentials awsCreds = new BasicAWSCredentials(profile[ACCESS_KEY], profile[SECRET_KEY]);
+                    stsClient = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
+                } else {
+                    BasicSessionCredentials awsCreds = new BasicSessionCredentials(profile[ACCESS_KEY], profile[SECRET_KEY], profile[TOKEN]);
+                    stsClient = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
                 }
-                byte[] signedRequest = Utility.assumeRole(roleArn.getText(),
-                        profile[ACCESS_KEY],
-                        profile[SECRET_KEY],
-                        profile[TOKEN],
-                        helpers,
-                        pw,
-                        service);
-                if(signedRequest == null) {
-                    pw.println("Error in signing");
-                    return;
-                }
-                IHttpRequestResponse response = makeRequest(service, signedRequest);
-                if (response == null) {
-                    pw.println("Error in sending request");
-                    return;
-                }
-                String[] creds = getCredsFromResponse(response);
-                if (creds == null) {
-                    pw.println("Error retrieving credentials, check ARN name or permissions");
-                    return;
-                }
+                AssumeRoleRequest assume = new AssumeRoleRequest().withRoleArn(roleArn.getText()).withRoleSessionName("testing");
+                AssumeRoleResult result = stsClient.assumeRole(assume);
+
                 String[] details = new String[]{
-                        creds[0],                   // access key
-                        creds[1],                   // secret key
-                        "",                         // region
-                        "",                         // service
-                        creds[2],                   // session token
-                        Boolean.toString(true),  // use token
-                        Boolean.toString(true),  // use dynamic region and service
-                        Boolean.toString(false), // use default credentials
-                        ""};                        // role ARN
-                int profileNum = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
+                        result.getCredentials().getAccessKeyId(),       // access key
+                        result.getCredentials().getSecretAccessKey(),   // secret key
+                        "",                                             // region
+                        "",                                             // service
+                        result.getCredentials().getSessionToken(),      // session token
+                        Boolean.toString(true),                      // use token
+                        Boolean.toString(true),                      // use dynamic region and service
+                        Boolean.toString(false),                     // use default credentials
+                        ""};                                            // role ARN
+                int profileNum = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
                 String[] save = profiles.get(profileNum);
                 save[ARN] = roleArn.getText();
                 profiles.replace(profileNum, save);
@@ -402,36 +387,6 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
             }
         });
-    }
-
-    private IHttpRequestResponse makeRequest(IHttpService service, byte[] request) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<IHttpRequestResponse> callable = new Callable<IHttpRequestResponse>() {
-            @Override
-            public IHttpRequestResponse call() {
-                return callbacks.makeHttpRequest(service, request);
-            }
-        };
-        Future<IHttpRequestResponse> future = executor.submit(callable);
-        executor.shutdown();
-        try {
-            return future.get();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private String[] getCredsFromResponse(IHttpRequestResponse response) {
-        String[] creds = {"", "", ""};
-        String responseString = helpers.bytesToString(response.getResponse());
-        if(responseString.contains("<AssumeRoleResult>")) {
-            creds[0] = responseString.split("<AccessKeyId>")[1].split("</")[0];
-            creds[1] = responseString.split("<SecretAccessKey>")[1].split("</")[0];
-            creds[2] = responseString.split("<SessionToken>")[1].split("</")[0];
-        } else {
-            return null;
-        }
-        return creds;
     }
 
     // Set the menu items in the context menu

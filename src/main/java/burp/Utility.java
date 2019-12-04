@@ -297,45 +297,4 @@ public class Utility {
         }
         return sb.toString();
     }
-
-    public static byte[] assumeRole(String arn,
-                                    String accessKey,
-                                    String secretKey,
-                                    String token,
-                                    IExtensionHelpers helpers,
-                                    PrintWriter pw,
-                                    IHttpService service) {
-        List<String> headers = new ArrayList<>();
-        headers.add("POST / HTTP/1.1");
-        headers.add("Host: sts.amazonaws.com");
-        headers.add("Accept-Encoding: gzip, deflate");
-        headers.add("Content-Type: application/x-www-form-urlencoded; charset=utf-8");
-        headers.add("User-Agent: aws-cli/1.16.132 Python/3.6.0 Windows/10 botocore/1.12.122 BurpAWSSigner");
-        headers.add("X-Amz-Date: 20191122T201605Z");
-        if(!token.isEmpty()) {
-            headers.add("X-Amz-Security-Token: " + token);
-            headers.add("Authorization: AWS4-HMAC-SHA256 Credential=" + accessKey +
-                    "/20191122/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date;x-amz-security-token, Signature=testing");
-        } else {
-            headers.add("Authorization: AWS4-HMAC-SHA256 Credential=" + accessKey +
-                    "/20191122/us-east-1/sts/aws4_request, SignedHeaders=content-type;host;x-amz-date, Signature=testing");
-        }
-        headers.add("Connection: close");
-        String body = "Action=AssumeRole&Version=2011-06-15&RoleArn="+arn+"&RoleSessionName=test";
-        HttpRequestResponse request = new HttpRequestResponse(helpers.buildHttpMessage(headers, helpers.stringToBytes(body)));
-        request.setHttpService(service);
-        try {
-            byte[] signedRequest = signRequest(request,
-                    helpers,
-                    "sts",
-                    "us-east-1",
-                    accessKey,
-                    secretKey,
-                    token,
-                    pw);
-            return signedRequest;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }
