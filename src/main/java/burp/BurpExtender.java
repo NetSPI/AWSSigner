@@ -14,11 +14,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.concurrent.*;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
-
+    private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
     private PrintWriter pw;
     private JPanel panel;
@@ -27,6 +28,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private JTextField token;
     private JTextField region;
     private JTextField service;
+    private JTextField roleArn;
     private JCheckBox useToken;
     private JCheckBox dynamicRegionAndService;
     private JCheckBox useDefaultProfile;
@@ -36,6 +38,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private JButton saveProfileButton;
     private JButton useProfileButton;
     private JButton deleteProfileButton;
+    private JButton assumeRoleButton;
     private boolean justDeleted = false;
     private HashMap<Integer, String[]> profiles;
     private int ACCESS_KEY = 0;
@@ -46,10 +49,11 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private int USE_TOKEN = 5;
     private int DYNAMIC = 6;
     private int READ_CREDS = 7;
+    private int ARN = 8;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
-
+        this.callbacks = callbacks;
         helpers = callbacks.getHelpers();
         this.pw = new PrintWriter(callbacks.getStdout(), true);
 
@@ -85,7 +89,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
             // If there is already an add profile button, start creating profiles
             numProfiles++;
             profileComboBox.insertItemAt(new AWSSignerMenuItem("Profile " + numProfiles, numProfiles), boxSize - 1);
-            profiles.put(numProfiles, new String[]{"", "", "", "", "", "", "", ""});
+            profiles.put(numProfiles, new String[]{"", "", "", "", "", "", "", "", ""});
             profileComboBox.setSelectedIndex(boxSize - 1);
             clearProfile();
 
@@ -100,6 +104,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         this.token.setText("");
         this.region.setText("");
         this.service.setText("");
+        this.roleArn.setText("");
         this.useToken.setSelected(false);
         this.useDefaultProfile.setSelected(false);
         this.dynamicRegionAndService.setSelected(false);
@@ -114,6 +119,38 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         this.useToken.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[USE_TOKEN]));
         this.dynamicRegionAndService.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[DYNAMIC]));
         this.useDefaultProfile.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[READ_CREDS]));
+        this.roleArn.setText(this.profiles.get(profile)[ARN]);
+
+    }
+
+    public void createAndPopulateProfile(String[] details, String name) {
+        // Add another profile to the combo box, or add the add profile button if it's not already there.
+        int boxSize = profileComboBox.getItemCount();
+        if (boxSize == 0) {
+
+            // If there's nothing here, just add our add profile button
+            this.profileComboBox.addItem(new AWSSignerMenuItem("Add Profile", 0));
+        } else {
+            for(int i = 0; i < boxSize; ++i) {
+                if(profileComboBox.getItemAt(i).toString().equals(name)) {
+                    int profileNum = ((AWSSignerMenuItem)profileComboBox.getItemAt(i)).getProfileNumber();
+                    profiles.replace(profileNum, details);
+                    profileComboBox.setSelectedIndex(i);
+                    clearProfile();
+                    populateProfile(profileNum);
+                    setMenuItems();
+                    return;
+                }
+            }
+            // If there is already an add profile button, start creating profiles
+            numProfiles++;
+            profileComboBox.insertItemAt(new AWSSignerMenuItem(name, numProfiles), boxSize - 1);
+            profiles.put(numProfiles, details);
+            profileComboBox.setSelectedIndex(boxSize - 1);
+            clearProfile();
+            populateProfile(numProfiles);
+            setMenuItems();
+        }
     }
 
     public void setupTab() {
@@ -152,16 +189,49 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
             @Override
             public void mouseReleased(MouseEvent e) {
                 int profile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
+                if (useDefaultProfile.isSelected()) {
+                    String[] profileToPut = new String[]{"", "", "", "", "",
+                            String.valueOf(useToken.isSelected()),
+                            String.valueOf(dynamicRegionAndService.isSelected()),
+                            String.valueOf(useDefaultProfile.isSelected()), roleArn.getText()};
+                    String currentUsersHomeDir = System.getProperty("user.home");
+                    try {
+                        File f = new File(currentUsersHomeDir + "/.aws/credentials");
+                        BufferedReader br = new BufferedReader(new FileReader(f));
+                        String st;
+                        int i = -1;
+                        while ((st = br.readLine()) != null) {
+                            if (st.equalsIgnoreCase("[default]")) {
+                                i = 0;
+                            } else if (i == 0 && st.startsWith("aws_access_key_id")) {
+                                profileToPut[ACCESS_KEY] = st.split(" ")[2];
+                            } else if (i == 0 && st.startsWith("aws_secret_access_key")) {
+                                profileToPut[SECRET_KEY] = st.split(" ")[2];
+                            } else if (i == 0 && st.startsWith("aws_security_token")) {
+                                profileToPut[TOKEN] = st.split(" ")[2];
+                            } else {
+                                i = -1;
+                            }
+                        }
+                        br.close();
+                        profiles.put(profile, profileToPut);
+                        populateProfile(profile);
+                    } catch (Exception ex) {
+                        pw.println("Error reading credentials file: " + ex.getMessage());
+                    }
+                } else {
+                    profiles.put(profile,
+                            new String[]{accessKey.getText(),
+                                    secretKey.getText(),
+                                    region.getText(),
+                                    service.getText(),
+                                    token.getText(),
+                                    String.valueOf(useToken.isSelected()),
+                                    String.valueOf(dynamicRegionAndService.isSelected()),
+                                    String.valueOf(useDefaultProfile.isSelected()),
+                                    roleArn.getText()});
+                }
                 pw.println("Saved profile " + profile + " with key: " + accessKey.getText());
-                profiles.put(profile,
-                        new String[]{accessKey.getText(),
-                                secretKey.getText(),
-                                region.getText(),
-                                service.getText(),
-                                token.getText(),
-                                String.valueOf(useToken.isSelected()),
-                                String.valueOf(dynamicRegionAndService.isSelected()),
-                                String.valueOf(useDefaultProfile.isSelected())});
             }
 
             @Override
@@ -265,6 +335,104 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
             }
         });
+
+        this.assumeRoleButton.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                String[] profile = profiles.get(Menu.getEnabledProfile());
+                IHttpService service = helpers.buildHttpService("sts.amazonaws.com", 443, true);
+                if(roleArn.getText().length() < 20) {
+                    pw.println("Invalid role ARN");
+                    return;
+                }
+                byte[] signedRequest = Utility.assumeRole(roleArn.getText(),
+                        profile[ACCESS_KEY],
+                        profile[SECRET_KEY],
+                        profile[TOKEN],
+                        helpers,
+                        pw,
+                        service);
+                if(signedRequest == null) {
+                    pw.println("Error in signing");
+                    return;
+                }
+                IHttpRequestResponse response = makeRequest(service, signedRequest);
+                if (response == null) {
+                    pw.println("Error in sending request");
+                    return;
+                }
+                String[] creds = getCredsFromResponse(response);
+                if (creds == null) {
+                    pw.println("Error retrieving credentials, check ARN name or permissions");
+                    return;
+                }
+                String[] details = new String[]{
+                        creds[0],                   // access key
+                        creds[1],                   // secret key
+                        "",                         // region
+                        "",                         // service
+                        creds[2],                   // session token
+                        Boolean.toString(true),  // use token
+                        Boolean.toString(true),  // use dynamic region and service
+                        Boolean.toString(false), // use default credentials
+                        ""};                        // role ARN
+                int profileNum = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
+                String[] save = profiles.get(profileNum);
+                save[ARN] = roleArn.getText();
+                profiles.replace(profileNum, save);
+                createAndPopulateProfile(details, roleArn.getText().split("role/")[1]);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
+    }
+
+    private IHttpRequestResponse makeRequest(IHttpService service, byte[] request) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<IHttpRequestResponse> callable = new Callable<IHttpRequestResponse>() {
+            @Override
+            public IHttpRequestResponse call() {
+                return callbacks.makeHttpRequest(service, request);
+            }
+        };
+        Future<IHttpRequestResponse> future = executor.submit(callable);
+        executor.shutdown();
+        try {
+            return future.get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String[] getCredsFromResponse(IHttpRequestResponse response) {
+        String[] creds = {"", "", ""};
+        String responseString = helpers.bytesToString(response.getResponse());
+        if(responseString.contains("<AssumeRoleResult>")) {
+            creds[0] = responseString.split("<AccessKeyId>")[1].split("</")[0];
+            creds[1] = responseString.split("<SecretAccessKey>")[1].split("</")[0];
+            creds[2] = responseString.split("<SessionToken>")[1].split("</")[0];
+        } else {
+            return null;
+        }
+        return creds;
     }
 
     // Set the menu items in the context menu
@@ -302,32 +470,6 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                 if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))) {
                     String[] profile = this.profiles.get(Menu.getEnabledProfile());
                     byte[] signedRequest;
-                    if (useDefaultProfile.isSelected() && profile[ACCESS_KEY].isEmpty()) {
-                        String currentUsersHomeDir = System.getProperty("user.home");
-                        try {
-                            File f = new File(currentUsersHomeDir + "/.aws/credentials");
-                            BufferedReader br = new BufferedReader(new FileReader(f));
-                            String st;
-                            int i = -1;
-                            while ((st = br.readLine()) != null) {
-                                if (st.equalsIgnoreCase("[default]")) {
-                                    i = 0;
-                                } else if (i == 0 && st.startsWith("aws_access_key_id")) {
-                                    profile[ACCESS_KEY] = st.split(" ")[2];
-                                } else if (i == 0 && st.startsWith("aws_secret_access_key")) {
-                                    profile[SECRET_KEY] = st.split(" ")[2];
-                                } else if (i == 0 && st.startsWith("aws_security_token")) {
-                                    profile[TOKEN] = st.split(" ")[2];
-                                } else {
-                                    i = -1;
-                                }
-                            }
-                            br.close();
-                        } catch (Exception e) {
-                            pw.println("Error reading credentials file: " + e.getMessage());
-                        }
-                    }
-
                     if (dynamicRegionAndService.isSelected()) {
                         String region = "";
                         String service = "";
@@ -412,7 +554,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
      */
     private void $$$setupUI$$$() {
         panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(10, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel.setLayout(new GridLayoutManager(12, 2, new Insets(0, 0, 0, 0), -1, -1));
         final JLabel label1 = new JLabel();
         label1.setText("Access Key: ");
         panel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -439,7 +581,12 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         service = new JTextField();
         panel.add(service, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel.add(spacer1, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel.add(spacer1, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        roleArn = new JTextField();
+        panel.add(roleArn, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label7 = new JLabel();
+        label7.setText("Role ARN:");
+        panel.add(label7, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         label5.setText("Profile:");
         panel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -461,7 +608,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         panel.add(saveProfileButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel1, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel.add(panel1, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(panel2, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -471,6 +618,9 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         useProfileButton = new JButton();
         useProfileButton.setText("Use Profile");
         panel2.add(useProfileButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        assumeRoleButton = new JButton();
+        assumeRoleButton.setText("Assume Role");
+        panel.add(assumeRoleButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
