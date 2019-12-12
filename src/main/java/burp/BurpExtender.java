@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,8 +36,6 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private JTextField roleArn;
     private JCheckBox useToken;
     private JCheckBox dynamicRegionAndService;
-    private JCheckBox useDefaultProfile;
-
     private JComboBox profileComboBox;
     private int numProfiles = 0;
     private JButton saveProfileButton;
@@ -52,8 +51,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
     private int TOKEN = 4;
     private int USE_TOKEN = 5;
     private int DYNAMIC = 6;
-    private int READ_CREDS = 7;
-    private int ARN = 8;
+    private int ARN = 7;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
@@ -92,7 +90,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
             // If there is already an add profile button, start creating profiles
             numProfiles++;
             profileComboBox.insertItemAt(new AWSSignerMenuItem("Profile " + numProfiles, numProfiles), boxSize - 1);
-            profiles.put(numProfiles, new String[]{"", "", "", "", "", "", "", "", ""});
+            profiles.put(numProfiles, new String[]{"", "", "", "", "", "", "", ""});
             profileComboBox.setSelectedIndex(boxSize - 1);
             clearProfile();
 
@@ -109,8 +107,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         this.service.setText("");
         this.roleArn.setText("");
         this.useToken.setSelected(false);
-        this.useDefaultProfile.setSelected(false);
         this.dynamicRegionAndService.setSelected(false);
+        this.roleArn.setText("");
     }
 
     private void populateProfile(int profile) {
@@ -121,7 +119,6 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         this.service.setText(this.profiles.get(profile)[SERVICE]);
         this.useToken.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[USE_TOKEN]));
         this.dynamicRegionAndService.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[DYNAMIC]));
-        this.useDefaultProfile.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[READ_CREDS]));
         this.roleArn.setText(this.profiles.get(profile)[ARN]);
 
     }
@@ -155,11 +152,54 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         }
     }
 
+    private void createDefaultProfiles() {
+        String currentUsersHomeDir = System.getProperty("user.home");
+        String[] profileToPut = new String[]{"", "", "", "", "",
+                Boolean.toString(false),
+                Boolean.toString(true), ""};
+        String name = "";
+        try {
+            File f = new File(currentUsersHomeDir + "/.aws/credentials");
+            BufferedReader br = new BufferedReader(new FileReader(f));
+            String st;
+            while ((st = br.readLine()) != null) {
+                if (st.contains("[") && st.contains("]")) {
+                    if(profileToPut[0].isEmpty()) {
+                        name = st.split("\\[")[1].split("]")[0];
+                    } else {
+                        pw.println("Saved profile " + name + " with access key " + profileToPut[0]);
+                        createAndPopulateProfile(profileToPut, name);
+                        name = st.split("\\[")[1].split("]")[0];
+                        profileToPut = new String[]{"", "", "", "", "",
+                                Boolean.toString(false),
+                                Boolean.toString(true),
+                                Boolean.toString(false), ""};
+                    }
+                } else if (st.startsWith("aws_access_key_id")) {
+                    profileToPut[ACCESS_KEY] = st.split(" ")[2];
+                } else if (st.startsWith("aws_secret_access_key")) {
+                    profileToPut[SECRET_KEY] = st.split(" ")[2];
+                } else if (st.startsWith("aws_security_token")) {
+                    profileToPut[TOKEN] = st.split(" ")[2];
+                    profileToPut[USE_TOKEN] = Boolean.toString(true);
+                } else {
+                    pw.println("Invalid line");
+                }
+            }
+            br.close();
+            pw.println("Saved profile " + name + " with access key " + profileToPut[0]);
+            createAndPopulateProfile(profileToPut, name);
+        } catch (Exception ex) {
+            pw.println("Error reading credentials file: " + ex.getMessage());
+        }
+    }
+
     private void setupTab() {
         // Set up profiles combobox
         this.profiles = new HashMap<>();
 
         createNewProfile();
+        createDefaultProfiles();
         createNewProfile();
 
         this.profileComboBox.addItemListener(e -> {
@@ -188,48 +228,15 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
             @Override
             public void mouseReleased(MouseEvent e) {
                 int profile = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
-                if (useDefaultProfile.isSelected()) {
-                    String[] profileToPut = new String[]{"", "", "", "", "",
-                            String.valueOf(useToken.isSelected()),
-                            String.valueOf(dynamicRegionAndService.isSelected()),
-                            String.valueOf(useDefaultProfile.isSelected()), roleArn.getText()};
-                    String currentUsersHomeDir = System.getProperty("user.home");
-                    try {
-                        File f = new File(currentUsersHomeDir + "/.aws/credentials");
-                        BufferedReader br = new BufferedReader(new FileReader(f));
-                        String st;
-                        int i = -1;
-                        while ((st = br.readLine()) != null) {
-                            if (st.equalsIgnoreCase("[default]")) {
-                                i = 0;
-                            } else if (i == 0 && st.startsWith("aws_access_key_id")) {
-                                profileToPut[ACCESS_KEY] = st.split(" ")[2];
-                            } else if (i == 0 && st.startsWith("aws_secret_access_key")) {
-                                profileToPut[SECRET_KEY] = st.split(" ")[2];
-                            } else if (i == 0 && st.startsWith("aws_security_token")) {
-                                profileToPut[TOKEN] = st.split(" ")[2];
-                            } else {
-                                i = -1;
-                            }
-                        }
-                        br.close();
-                        profiles.put(profile, profileToPut);
-                        populateProfile(profile);
-                    } catch (Exception ex) {
-                        pw.println("Error reading credentials file: " + ex.getMessage());
-                    }
-                } else {
-                    profiles.put(profile,
-                            new String[]{accessKey.getText(),
-                                    secretKey.getText(),
-                                    region.getText(),
-                                    service.getText(),
-                                    token.getText(),
-                                    String.valueOf(useToken.isSelected()),
-                                    String.valueOf(dynamicRegionAndService.isSelected()),
-                                    String.valueOf(useDefaultProfile.isSelected()),
-                                    roleArn.getText()});
-                }
+                profiles.put(profile,
+                        new String[]{accessKey.getText(),
+                                secretKey.getText(),
+                                region.getText(),
+                                service.getText(),
+                                token.getText(),
+                                String.valueOf(useToken.isSelected()),
+                                String.valueOf(dynamicRegionAndService.isSelected()),
+                                roleArn.getText()});
                 pw.println("Saved profile " + profile + " with key: " + accessKey.getText());
             }
 
@@ -375,7 +382,6 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                         "",                           // service
                         creds.getSessionToken(),      // session token
                         Boolean.toString(true),    // use token
-                        Boolean.toString(true),    // use dynamic region and service
                         Boolean.toString(false),   // use default credentials
                         ""};                          // role ARN
                 int profileNum = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
@@ -560,20 +566,17 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
         saveProfileButton.setText("Save Profile");
         useToken = new JCheckBox();
         useToken.setText("Use session token?");
-        panel.add(useToken, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel.add(useToken, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         dynamicRegionAndService = new JCheckBox();
         dynamicRegionAndService.setText("Dynamically load region and service from request?");
         panel.add(dynamicRegionAndService, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        useDefaultProfile = new JCheckBox();
-        useDefaultProfile.setText("Use default credentials from ~" + File.separator + ".aws" + File.separator + "credentials?");
-        panel.add(useDefaultProfile, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        panel.add(saveProfileButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel.add(saveProfileButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel.add(panel1, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel2, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel.add(panel2, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         deleteProfileButton = new JButton();
         deleteProfileButton.setText("Delete Profile");
         panel2.add(deleteProfileButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
