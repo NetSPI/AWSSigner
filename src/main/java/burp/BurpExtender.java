@@ -164,16 +164,16 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
             String st;
             while ((st = br.readLine()) != null) {
                 if (st.contains("[") && st.contains("]")) {
-                    if(profileToPut[0].isEmpty()) {
+                    if(profileToPut[ACCESS_KEY].isEmpty()) {
                         name = st.split("\\[")[1].split("]")[0];
                     } else {
-                        pw.println("Saved profile " + name + " with access key " + profileToPut[0]);
+                        pw.println("Saved profile " + name + " with access key " + profileToPut[ACCESS_KEY]);
                         createAndPopulateProfile(profileToPut, name);
                         name = st.split("\\[")[1].split("]")[0];
                         profileToPut = new String[]{"", "", "", "", "",
                                 Boolean.toString(false),
                                 Boolean.toString(true),
-                                Boolean.toString(false), ""};
+                                ""};
                     }
                 } else if (st.startsWith("aws_access_key_id")) {
                     profileToPut[ACCESS_KEY] = st.split(" ")[2];
@@ -187,11 +187,33 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                 }
             }
             br.close();
-            pw.println("Saved profile " + name + " with access key " + profileToPut[0]);
+            pw.println("Saved profile " + name + " with access key " + profileToPut[ACCESS_KEY]);
             createAndPopulateProfile(profileToPut, name);
         } catch (Exception ex) {
             pw.println("Error reading credentials file: " + ex.getMessage());
         }
+    }
+
+    private void createEnvironmentVariableProfile() {
+        String[] profileToPut = new String[]{"", "", "", "", "",
+                Boolean.toString(false),
+                Boolean.toString(true), ""};
+        String name = "EnvironmentVariables";
+        String access = System.getenv("AWS_ACCESS_KEY_ID");
+        String secret = System.getenv("AWS_SECRET_ACCESS_KEY");
+        if(access != null && secret !=null) {
+            profileToPut[ACCESS_KEY] = access;
+            profileToPut[SECRET_KEY] = secret;
+        } else {
+            return;
+        }
+        String token = System.getenv("AWS_SESSION_TOKEN");
+        if(!token.isEmpty()) {
+            profileToPut[TOKEN] = token;
+            profileToPut[USE_TOKEN] = Boolean.toString(true);
+        }
+        pw.println("Saved profile " + name + " with access key " + profileToPut[ACCESS_KEY]);
+        createAndPopulateProfile(profileToPut, name);
     }
 
     private void setupTab() {
@@ -200,6 +222,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
         createNewProfile();
         createDefaultProfiles();
+        createEnvironmentVariableProfile();
         createNewProfile();
 
         this.profileComboBox.addItemListener(e -> {
@@ -385,9 +408,21 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
                         Boolean.toString(false),   // use default credentials
                         ""};                          // role ARN
                 int profileNum = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
+                // Save the profile that holds the role ARN in case user forgets
                 String[] save = profiles.get(profileNum);
                 save[ARN] = roleArn.getText();
                 profiles.replace(profileNum, save);
+                // Replace the region and service with the old ones if they're present
+                int boxSize = profileComboBox.getItemCount();
+                for (int i = 0; i < boxSize; ++i) {
+                    if (profileComboBox.getItemAt(i).toString().equals(roleArn.getText())) {
+                        int profileNumOther = ((AWSSignerMenuItem) profileComboBox.getItemAt(i)).getProfileNumber();
+                        String[] old = profiles.get(profileNumOther);
+                        details[REGION] = old[REGION];
+                        details[SERVICE] = old[SERVICE];
+                        details[DYNAMIC] = old[DYNAMIC];
+                    }
+                }
                 createAndPopulateProfile(details, roleArn.getText());
             }
 
