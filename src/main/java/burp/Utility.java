@@ -102,7 +102,7 @@ class Utility {
         String notUnicode = "[^\\u0000-\\u007F]+";
         String payloadHash;
 
-        if (!requestInfo.getMethod().equals("GET")){
+        if (!requestInfo.getMethod().equals("GET") || requestInfo.getBodyOffset() > 0){
 
             int bodyOffset = requestInfo.getBodyOffset();
             body = hexToString(bytesToHex(Arrays.copyOfRange(request, bodyOffset, request.length)));
@@ -119,6 +119,7 @@ class Utility {
                 }
                 body = sanitize;
             }
+            pw.println(Base64.getEncoder().encodeToString(body.getBytes("utf-8")));
             payloadHash = Hashing.sha256().hashString(body, StandardCharsets.UTF_8).toString().toLowerCase();
 
         } else {
@@ -273,7 +274,7 @@ class Utility {
             signedHeaders = matcher.group(1);
         }
 
-        return  signedHeaders;
+        return signedHeaders;
 
     }
     private static String bytesToHex(byte[] bytes) {
