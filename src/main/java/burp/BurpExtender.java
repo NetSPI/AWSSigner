@@ -470,7 +470,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
 
                 java.util.List<String> headers = request.getHeaders();
 
-                if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))) {
+                if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date"))) &&
+                        headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("authorization")))) {
                     String[] profile = this.profiles.get(Menu.getEnabledProfile());
                     byte[] signedRequest;
                     if (dynamicRegionAndService.isSelected()) {
