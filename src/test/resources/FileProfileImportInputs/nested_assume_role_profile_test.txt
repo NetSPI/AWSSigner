@@ -1,0 +1,24 @@
+[profile assume3]
+role_arn = arn:aws:iam::123456789012:role/marketingadminrole
+source_profile = assume2
+duration_seconds = 3600
+external_id = 123456
+role_session_name = Session_Maria_Garcia
+
+[profile assume2]
+role_arn = arn:aws:iam::123456789012:role/marketingadminrole
+source_profile = assume1
+duration_seconds = 3600
+external_id = 123456
+role_session_name = Session_Maria_Garcia
+
+[profile assume1]
+role_arn = arn:aws:iam::123456789012:role/marketingadminrole
+source_profile = static
+duration_seconds = 3600
+external_id = 123456
+role_session_name = Session_Maria_Garcia
+
+[profile static]
+aws_access_key_id=AKIAIOSFODNN7EXAMPLE
+aws_secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY

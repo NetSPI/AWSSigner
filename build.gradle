@@ -1,27 +1,40 @@
-group 'com.netspi.awssigner'
-version '2.0.0'
+group "com.netspi.awssigner"
+version "2.0.0"
 
-apply plugin: 'java'
+apply plugin: "java"
+
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
 
 repositories {
     mavenCentral()
 }
 
+def awsSdkVersion = "2.17.116"
+def junitVersion = "5.6.0"
+
 dependencies {
-    implementation 'com.google.guava:guava:23.2-jre'
-    implementation 'com.intellij:forms_rt:7.0.3'
-    implementation 'javax.xml.bind:jaxb-api:2.3.0'
-    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sts
-    implementation group: 'com.amazonaws', name: 'aws-java-sdk-sts', version: '1.11.683'
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
-    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.228')
-    implementation 'com.amazonaws:aws-java-sdk-sts'
-    testImplementation group: 'junit', name: 'junit', version: '4.11'
+    implementation "com.google.code.gson:gson:2.8.9"
+    implementation "com.google.guava:guava:31.0.1-jre"
+    implementation "net.portswigger.burp.extender:burp-extender-api:2.3"
+    implementation "software.amazon.awssdk:sts:$awsSdkVersion"
+    implementation "software.amazon.awssdk:auth-crt:$awsSdkVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
 }
 
-def mainClassName = "com.netspi.awssigner.Main"
+test {
+    useJUnitPlatform()
+}
+
+def mainClassName = "com.netspi.awssigner.TestRunner"
 
 jar {
+  dependsOn 'test'
+
   manifest {
     attributes "Main-Class": "$mainClassName"
   }

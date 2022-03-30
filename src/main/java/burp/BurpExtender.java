@@ -1,633 +1,212 @@
 package burp;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
-import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.*;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import com.netspi.awssigner.signing.AwsRequestSigner;
+import com.netspi.awssigner.controller.AWSSignerController;
+import com.netspi.awssigner.log.LogWriter;
+import com.netspi.awssigner.model.AWSSignerConfiguration;
+import com.netspi.awssigner.model.Profile;
+import com.netspi.awssigner.signing.DelegatingAwsRequestSigner;
+import com.netspi.awssigner.signing.ParsedAuthHeader;
+import com.netspi.awssigner.signing.SigningException;
+import com.netspi.awssigner.view.BurpUIComponentCustomizer;
+import com.netspi.awssigner.view.BurpTabPanel;
+import java.awt.Component;
+import java.util.List;
+import java.util.Optional;
+import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.UUID;
+//This is the Burp primary class. It needs to live in this package and have this name
+public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IContextMenuFactory {
 
-public class BurpExtender implements IBurpExtender, ITab, IHttpListener {
+    public static final String EXTENSION_NAME = "AWS Signer";
+
+    private BurpTabPanel view;
+    private AWSSignerConfiguration model;
+    private AWSSignerController controller;
+
+    private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
-    private PrintWriter pw;
-    private JPanel panel;
-    private JTextField accessKey;
-    private JTextField secretKey;
-    private JTextField token;
-    private JTextField region;
-    private JTextField service;
-    private JTextField roleArn;
-    private JCheckBox useToken;
-    private JCheckBox dynamicRegionAndService;
-    private JComboBox profileComboBox;
-    private int numProfiles = 0;
-    private JButton saveProfileButton;
-    private JButton useProfileButton;
-    private JButton deleteProfileButton;
-    private JButton assumeRoleButton;
-    private boolean justDeleted = false;
-    private HashMap<Integer, String[]> profiles;
-    private int ACCESS_KEY = 0;
-    private int SECRET_KEY = 1;
-    private int REGION = 2;
-    private int SERVICE = 3;
-    private int TOKEN = 4;
-    private int USE_TOKEN = 5;
-    private int DYNAMIC = 6;
-    private int ARN = 7;
 
     @Override
-    public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
+    public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
+
+        //Save callbacks and helpers for later reference
+        this.callbacks = callbacks;
         helpers = callbacks.getHelpers();
-        this.pw = new PrintWriter(callbacks.getStdout(), true);
 
+        //Setup styling
+        BurpUIComponentCustomizer.setBurpStyler((Component component) -> {
+            callbacks.customizeUiComponent(component);
+        });
 
-        setupTab();
+        //Logging
+        LogWriter.configure(callbacks.getStdout(), callbacks.getStderr());
+        LogWriter.logDebug("Logging configured");
 
-        callbacks.setExtensionName("AWS Signer");
+        //Create the view
+        view = new BurpTabPanel();
+        //Create the model
+        model = new AWSSignerConfiguration();
+        //Create controller to keep them in sync
+        controller = new AWSSignerController(view, model);
 
-        callbacks.registerContextMenuFactory(new Menu());
+        //register with Burp
+        //set our extension name
+        callbacks.setExtensionName(EXTENSION_NAME);
 
+        //register ourselves with Burp
+        //callbacks.registerContextMenuFactory(new Menu());
         SwingUtilities.invokeLater(() -> {
-
-            callbacks.customizeUiComponent(panel);
-
             callbacks.addSuiteTab(BurpExtender.this);
-
+            callbacks.registerContextMenuFactory(BurpExtender.this);
             callbacks.registerHttpListener(BurpExtender.this);
         });
-
-
-    }
-
-    private void createNewProfile() {
-
-        // Add another profile to the combo box, or add the add profile button if it's not already there.
-        int boxSize = profileComboBox.getItemCount();
-        if (boxSize == 0) {
-
-            // If there's nothing here, just add our add profile button
-            this.profileComboBox.addItem(new AWSSignerMenuItem("Add Profile", 0));
-        } else {
-
-            // If there is already an add profile button, start creating profiles
-            numProfiles++;
-            profileComboBox.insertItemAt(new AWSSignerMenuItem("Profile " + numProfiles, numProfiles), boxSize - 1);
-            profiles.put(numProfiles, new String[]{"", "", "", "", "", "", "", ""});
-            profileComboBox.setSelectedIndex(boxSize - 1);
-            clearProfile();
-
-            setMenuItems();
-        }
-    }
-
-    private void clearProfile() {
-        // Reset text fields
-        this.accessKey.setText("");
-        this.secretKey.setText("");
-        this.token.setText("");
-        this.region.setText("");
-        this.service.setText("");
-        this.roleArn.setText("");
-        this.useToken.setSelected(false);
-        this.dynamicRegionAndService.setSelected(false);
-        this.roleArn.setText("");
-    }
-
-    private void populateProfile(int profile) {
-        this.accessKey.setText(this.profiles.get(profile)[ACCESS_KEY]);
-        this.secretKey.setText(this.profiles.get(profile)[SECRET_KEY]);
-        this.token.setText(this.profiles.get(profile)[TOKEN]);
-        this.region.setText(this.profiles.get(profile)[REGION]);
-        this.service.setText(this.profiles.get(profile)[SERVICE]);
-        this.useToken.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[USE_TOKEN]));
-        this.dynamicRegionAndService.setSelected(Boolean.parseBoolean(this.profiles.get(profile)[DYNAMIC]));
-        this.roleArn.setText(this.profiles.get(profile)[ARN]);
-
-    }
-
-    private void createAndPopulateProfile(String[] details, String name) {
-        // Add another profile to the combo box, or add the add profile button if it's not already there.
-        int boxSize = profileComboBox.getItemCount();
-        // If there's nothing here, just add our add profile button
-        if (boxSize == 0) {
-            this.profileComboBox.addItem(new AWSSignerMenuItem("Add Profile", 0));
-        } else {
-            for(int i = 0; i < boxSize; ++i) {
-                if(profileComboBox.getItemAt(i).toString().equals(name)) {
-                    int profileNum = ((AWSSignerMenuItem)profileComboBox.getItemAt(i)).getProfileNumber();
-                    profiles.replace(profileNum, details);
-                    profileComboBox.setSelectedIndex(i);
-                    clearProfile();
-                    populateProfile(profileNum);
-                    setMenuItems();
-                    return;
-                }
-            }
-            // If there is already an add profile button, start creating profiles
-            numProfiles++;
-            profileComboBox.insertItemAt(new AWSSignerMenuItem(name, numProfiles), boxSize - 1);
-            profiles.put(numProfiles, details);
-            profileComboBox.setSelectedIndex(boxSize - 1);
-            clearProfile();
-            populateProfile(numProfiles);
-            setMenuItems();
-        }
-    }
-
-    private void createDefaultProfiles() {
-        String currentUsersHomeDir = System.getProperty("user.home");
-        String[] profileToPut = new String[]{"", "", "", "", "",
-                Boolean.toString(false),
-                Boolean.toString(true), ""};
-        String name = "";
-        try {
-            File f = new File(currentUsersHomeDir + "/.aws/credentials");
-            BufferedReader br = new BufferedReader(new FileReader(f));
-            String st;
-            while ((st = br.readLine()) != null) {
-                if (st.contains("[") && st.contains("]")) {
-                    if(profileToPut[ACCESS_KEY].isEmpty()) {
-                        name = st.split("\\[")[1].split("]")[0];
-                    } else {
-                        pw.println("Saved profile " + name + " with access key " + profileToPut[ACCESS_KEY]);
-                        createAndPopulateProfile(profileToPut, name);
-                        name = st.split("\\[")[1].split("]")[0];
-                        profileToPut = new String[]{"", "", "", "", "",
-                                Boolean.toString(false),
-                                Boolean.toString(true),
-                                ""};
-                    }
-                } else if (st.startsWith("aws_access_key_id")) {
-                    profileToPut[ACCESS_KEY] = st.split(" ")[2];
-                } else if (st.startsWith("aws_secret_access_key")) {
-                    profileToPut[SECRET_KEY] = st.split(" ")[2];
-                } else if (st.startsWith("aws_security_token")) {
-                    profileToPut[TOKEN] = st.split(" ")[2];
-                    profileToPut[USE_TOKEN] = Boolean.toString(true);
-                } else {
-                    pw.println("Invalid line");
-                }
-            }
-            br.close();
-            pw.println("Saved profile " + name + " with access key " + profileToPut[ACCESS_KEY]);
-            createAndPopulateProfile(profileToPut, name);
-        } catch (Exception ex) {
-            pw.println("Error reading credentials file: " + ex.getMessage());
-        }
-    }
-
-    private void createEnvironmentVariableProfile() {
-        String[] profileToPut = new String[]{"", "", "", "", "",
-                Boolean.toString(false),
-                Boolean.toString(true), ""};
-        String name = "EnvironmentVariables";
-        String access = System.getenv("AWS_ACCESS_KEY_ID");
-        String secret = System.getenv("AWS_SECRET_ACCESS_KEY");
-        if(access != null && secret !=null) {
-            profileToPut[ACCESS_KEY] = access;
-            profileToPut[SECRET_KEY] = secret;
-        } else {
-            return;
-        }
-        String token = System.getenv("AWS_SESSION_TOKEN");
-        if(!token.isEmpty()) {
-            profileToPut[TOKEN] = token;
-            profileToPut[USE_TOKEN] = Boolean.toString(true);
-        }
-        pw.println("Saved profile " + name + " with access key " + profileToPut[ACCESS_KEY]);
-        createAndPopulateProfile(profileToPut, name);
-    }
-
-    private void setupTab() {
-        // Set up profiles combobox
-        this.profiles = new HashMap<>();
-
-        createNewProfile();
-        createDefaultProfiles();
-        createEnvironmentVariableProfile();
-        createNewProfile();
-
-        this.profileComboBox.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED && !justDeleted) {
-                int selectedProfile = ((AWSSignerMenuItem) e.getItem()).getProfileNumber();
-                if (selectedProfile == 0) {
-                    pw.println("Creating new profile...");
-                    createNewProfile();
-                } else {
-                    populateProfile(selectedProfile);
-                }
-            }
-        });
-
-        this.saveProfileButton.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                int profile = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
-                profiles.put(profile,
-                        new String[]{accessKey.getText(),
-                                secretKey.getText(),
-                                region.getText(),
-                                service.getText(),
-                                token.getText(),
-                                String.valueOf(useToken.isSelected()),
-                                String.valueOf(dynamicRegionAndService.isSelected()),
-                                roleArn.getText()});
-                pw.println("Saved profile " + profile + " with key: " + accessKey.getText());
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-        this.deleteProfileButton.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                int profile = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
-                int index = profileComboBox.getSelectedIndex();
-                pw.println("Deleting profile " + profile + "...");
-
-                // We need to know this so that when a new item is selected by default by
-                // the combobox, we can ignore the action.
-                justDeleted = true;
-                profileComboBox.removeItemAt(index);
-                profiles.remove(profile);
-
-                // Determine how we should move our combobox, and what profile we need to populate
-                if (profiles.size() > index) {
-
-                    // There are profiles after this one, move to the newer profile
-                    profileComboBox.setSelectedIndex(index);
-                    int newProfile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
-                    populateProfile(newProfile);
-                } else if (profiles.size() > 0) {
-
-                    // No newer profiles, but there are older ones. Move to the older one
-                    profileComboBox.setSelectedIndex(index - 1);
-                    int newProfile = ((AWSSignerMenuItem) profileComboBox.getSelectedItem()).getProfileNumber();
-                    populateProfile(newProfile);
-                } else {
-
-                    // No other profiles exist, create a new one
-                    createNewProfile();
-                }
-
-                // If we just deleted our enabled profile, disable the signer
-                if (profile == Menu.getEnabledProfile()) {
-                    Menu.setEnabledProfile(0);
-                }
-
-                setMenuItems();
-
-                justDeleted = false;
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-        this.useProfileButton.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                int profile = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
-                Menu.setEnabledProfile(profile);
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-
-        this.assumeRoleButton.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                String[] profile = profiles.get(Menu.getEnabledProfile());
-                AWSSecurityTokenService stsClient;
-                if(profile[TOKEN].isEmpty()) {
-                    BasicAWSCredentials awsCreds = new BasicAWSCredentials(profile[ACCESS_KEY], profile[SECRET_KEY]);
-                    stsClient = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-                } else {
-                    BasicSessionCredentials awsCreds = new BasicSessionCredentials(profile[ACCESS_KEY], profile[SECRET_KEY], profile[TOKEN]);
-                    stsClient = AWSSecurityTokenServiceClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(awsCreds)).build();
-                }
-                Credentials creds;
-                if(roleArn.getText().equals("session-token")) {
-                    GetSessionTokenRequest session = new GetSessionTokenRequest();
-                    pw.println("Retrieving session token for " + profile[ACCESS_KEY]);
-                    creds = stsClient.getSessionToken(session).getCredentials();
-                } else {
-                    String uuid = UUID.randomUUID().toString();
-                    AssumeRoleRequest assume = new AssumeRoleRequest().withRoleArn(roleArn.getText()).withRoleSessionName(uuid);
-                    pw.println("Assuming role " + roleArn.getText() + " with role session name " + uuid);
-                    creds = stsClient.assumeRole(assume).getCredentials();
-                }
-                String[] details = new String[]{
-                        creds.getAccessKeyId(),       // access key
-                        creds.getSecretAccessKey(),   // secret key
-                        "",                           // region
-                        "",                           // service
-                        creds.getSessionToken(),      // session token
-                        Boolean.toString(true),    // use token
-                        Boolean.toString(false),   // use default credentials
-                        ""};                          // role ARN
-                int profileNum = ((AWSSignerMenuItem) Objects.requireNonNull(profileComboBox.getSelectedItem())).getProfileNumber();
-                // Save the profile that holds the role ARN in case user forgets
-                String[] save = profiles.get(profileNum);
-                save[ARN] = roleArn.getText();
-                profiles.replace(profileNum, save);
-                // Replace the region and service with the old ones if they're present
-                int boxSize = profileComboBox.getItemCount();
-                for (int i = 0; i < boxSize; ++i) {
-                    if (profileComboBox.getItemAt(i).toString().equals(roleArn.getText())) {
-                        int profileNumOther = ((AWSSignerMenuItem) profileComboBox.getItemAt(i)).getProfileNumber();
-                        String[] old = profiles.get(profileNumOther);
-                        details[REGION] = old[REGION];
-                        details[SERVICE] = old[SERVICE];
-                        details[DYNAMIC] = old[DYNAMIC];
-                    }
-                }
-                createAndPopulateProfile(details, roleArn.getText());
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
-        });
-    }
-
-    // Set the menu items in the context menu
-    private void setMenuItems() {
-        int itemCount = profileComboBox.getItemCount();
-        AWSSignerMenuItem[] menuItems = new AWSSignerMenuItem[itemCount - 1];
-
-        // Skip the first item, it's just the add profile button
-        for (int i = 0; i < itemCount - 1; i++) {
-            menuItems[i] = (AWSSignerMenuItem) profileComboBox.getItemAt(i);
-        }
-
-        Menu.setMenuItems(menuItems);
     }
 
     @Override
     public String getTabCaption() {
-        return "AWS Signer";
+        return EXTENSION_NAME;
     }
 
     @Override
     public Component getUiComponent() {
-        return panel;
+        //Apply Burp Styling
+        BurpUIComponentCustomizer.applyBurpStyling(view);
+        return view;
     }
 
     @Override
-    public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) throws Exception {
+    public List<JMenuItem> createMenuItems(IContextMenuInvocation invocation) {
+        List<JMenuItem> menuItems = controller.getMenuItems(invocation);
+        menuItems.forEach(BurpUIComponentCustomizer::applyBurpStyling);
+        return menuItems;
+    }
 
-        if(messageIsRequest) {
-            if (Menu.getEnabledProfile() > 0) {
-                IRequestInfo request = helpers.analyzeRequest(messageInfo.getRequest());
+    @Override
+    public void processHttpMessage(int toolFlag, boolean messageIsRequest, IHttpRequestResponse messageInfo) {
+        LogWriter.logDebug("Handling incoming HTTP message.");
 
-                java.util.List<String> headers = request.getHeaders();
+        //Check if it's a request. We only sign requests
+        if (!messageIsRequest) {
+            LogWriter.logDebug("Ignoring response.");
+            return;
+        }
 
-                if (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date"))) &&
-                        headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("authorization")))) {
-                    String[] profile = this.profiles.get(Menu.getEnabledProfile());
-                    byte[] signedRequest;
-                    if (dynamicRegionAndService.isSelected()) {
-                        String region = "";
-                        String service = "";
-                        profile[REGION] = region;
-                        profile[SERVICE] = service;
-                        for(String header : headers) {
-                            if (header.toLowerCase().startsWith("authorization:")){
-                                String[] splitCredential = header.split("=")[1].split("/");
-                                region = splitCredential[2];
-                                service = splitCredential[3];
-                            }
-                        }
-                        pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
-                        if (Boolean.parseBoolean(profile[USE_TOKEN])) {
-                            signedRequest = Utility.signRequest(messageInfo,
-                                    helpers,
-                                    service,
-                                    region,
-                                    profile[ACCESS_KEY],
-                                    profile[SECRET_KEY],
-                                    profile[TOKEN],
-                                    pw);
-                        } else {
-                            signedRequest = Utility.signRequest(messageInfo,
-                                    helpers,
-                                    service,
-                                    region,
-                                    profile[ACCESS_KEY],
-                                    profile[SECRET_KEY],
-                                    "",
-                                    pw);
-                        }
-                        messageInfo.setRequest(signedRequest);
-                    } else if (!profile[SERVICE].equals("") && !profile[REGION].equals("") &&
-                        // Removed lower case for service and region since the signature is case-sensitive
-                        headers.stream().anyMatch((str -> str.trim().contains(profile[SERVICE]))) &&
-                        headers.stream().anyMatch((str -> str.trim().contains(profile[REGION])))) {
-                        pw.println("Signing with profile " + Menu.getEnabledProfile() + " with key: " + profile[ACCESS_KEY]);
-                        if (Boolean.parseBoolean(profile[USE_TOKEN])) {
-                            signedRequest = Utility.signRequest(messageInfo,
-                                    helpers,
-                                    profile[SERVICE],
-                                    profile[REGION],
-                                    profile[ACCESS_KEY],
-                                    profile[SECRET_KEY],
-                                    profile[TOKEN],
-                                    pw);
-                        } else {
-                            signedRequest = Utility.signRequest(messageInfo,
-                                    helpers,
-                                    profile[SERVICE],
-                                    profile[REGION],
-                                    profile[ACCESS_KEY],
-                                    profile[SECRET_KEY],
-                                    "",
-                                    pw);
-                        }
-                        messageInfo.setRequest(signedRequest);
-                    } else {
-                        messageInfo.setRequest(messageInfo.getRequest());
-                        pw.println("Request not in defined region and service, not signing");
-                    }
-                }
+        //Is the signer enabled?
+        if (!model.isEnabled) {
+            LogWriter.logDebug("Signing not enabled. Ignoring Message.");
+            return;
+        }
+
+        //Could be a request we want to sign. Let's analyze it
+        IRequestInfo request = helpers.analyzeRequest(messageInfo);
+
+        //Check if this is a SigV4 request
+        if (!isSigV4Request(request)) {
+            LogWriter.logDebug("Message is not a SigV4 request.");
+            return;
+        }
+
+        Optional<ParsedAuthHeader> authHeaderOptional = parseAuthHeader(request);
+        if (authHeaderOptional.isEmpty()) {
+            LogWriter.logError("Unable to parse Authorization header from headers: " + request.getHeaders());
+            return;
+        }
+        ParsedAuthHeader authHeader = authHeaderOptional.get();
+
+        //Try to get the right profile for signing
+        Optional<Profile> profileOptional = getSigningProfileForRequest(authHeader);
+
+        //Check if we even found a profile
+        if (profileOptional.isEmpty()) {
+            LogWriter.logDebug("Unable to identify correct profile for message.");
+            return;
+        }
+
+        Profile profile = profileOptional.get();
+
+        //Check to see if this profile is even ready for signing
+        //This isn't a guarentee, but a quick assessment if it's NOT ready
+        if (!profile.requiredFieldsAreSet()) {
+            LogWriter.logDebug("Signing profile \"" + profile.getName() + "\" does not have all required fields set. Skipping request.");
+            return;
+        }
+
+        //Check to see if this profile is enabled
+        if (!profile.isEnabled()) {
+            LogWriter.logDebug("Signing profile \"" + profile.getName() + "\" is not enabled. Skipping request.");
+            return;
+        }
+
+        //Check to see if the profile only signs in-scope requests
+        if (profile.isInScopeOnly()) {
+            //Check if our request is in-scope
+            if (!callbacks.isInScope(request.getUrl())) {
+                LogWriter.logDebug("Signing profile \"" + profile.getName() + "\" only signs in-scope requests. "
+                        + "The current request is out of scope with URL " + request.getUrl() + " Skipping request");
+                return;
             }
         }
 
+        //Looks like we should be good for signing! Let's go
+        //AwsRequestSigner signer = new ClassicAwsRequestSigner(helpers, profile);
+        AwsRequestSigner signer = new DelegatingAwsRequestSigner(helpers, profile);
+        try {
+            byte[] signedRequest = signer.sign(messageInfo, request, authHeader);
+            //Update our message to point to the signed request
+            messageInfo.setRequest(signedRequest);
+            //Add a comment for later identification
+            LogWriter.logInfo("Successfully signed request with profile: " + profile.getName());
+            messageInfo.setComment(String.format("%s signed w/ %s", EXTENSION_NAME, profile.getName()));
+        } catch (SigningException e) {
+            String error = "Unable to sign request with profile "
+                    + profile.getName() + " due to exception: " + e.getMessage();
+            LogWriter.logError(error);
+            callbacks.issueAlert(error);//Not sure if this is helpful
+        }
     }
 
-    {
-// GUI initializer generated by IntelliJ IDEA GUI Designer
-// >>> IMPORTANT!! <<<
-// DO NOT EDIT OR ADD ANY CODE HERE!
-        $$$setupUI$$$();
+    private Optional<ParsedAuthHeader> parseAuthHeader(IRequestInfo request) {
+        //Start by dissecting the Authorization header
+        List<String> headers = request.getHeaders();
+        return headers.stream().map(header -> header.trim()) //Trim
+                .map(ParsedAuthHeader::parseFromAuthorizationHeader) //Try to parse if it's the authorization header
+                .filter(Optional::isPresent) //Only keep successfully parsed header
+                .map(Optional::get) //Unwrap optional
+                .findFirst(); //Keep the first match
     }
 
-    /**
-     * Method generated by IntelliJ IDEA GUI Designer
-     * >>> IMPORTANT!! <<<
-     * DO NOT edit this method OR call it in your code!
-     *
-     * @noinspection ALL
-     */
-    private void $$$setupUI$$$() {
-        panel = new JPanel();
-        panel.setLayout(new GridLayoutManager(12, 2, new Insets(0, 0, 0, 0), -1, -1));
-        final JLabel label1 = new JLabel();
-        label1.setText("Access Key: ");
-        panel.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        accessKey = new JTextField();
-        panel.add(accessKey, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("Secret Key:");
-        panel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label6 = new JLabel();
-        label6.setText("Session Token:");
-        panel.add(label6, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        label3.setText("Region: ");
-        panel.add(label3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label4 = new JLabel();
-        label4.setText("Service: ");
-        panel.add(label4, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        secretKey = new JTextField();
-        panel.add(secretKey, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        token = new JTextField();
-        panel.add(token, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        region = new JTextField();
-        panel.add(region, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        service = new JTextField();
-        panel.add(service, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel.add(spacer1, new GridConstraints(11, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        roleArn = new JTextField();
-        panel.add(roleArn, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JLabel label7 = new JLabel();
-        label7.setText("Role ARN:");
-        panel.add(label7, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label5 = new JLabel();
-        label5.setText("Profile:");
-        panel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        profileComboBox = new JComboBox();
-        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
-        profileComboBox.setModel(defaultComboBoxModel1);
-        panel.add(profileComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        saveProfileButton = new JButton();
-        saveProfileButton.setText("Save Profile");
-        useToken = new JCheckBox();
-        useToken.setText("Use session token?");
-        panel.add(useToken, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        dynamicRegionAndService = new JCheckBox();
-        dynamicRegionAndService.setText("Dynamically load region and service from request?");
-        panel.add(dynamicRegionAndService, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        panel.add(saveProfileButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel1, new GridConstraints(11, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel.add(panel2, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        deleteProfileButton = new JButton();
-        deleteProfileButton.setText("Delete Profile");
-        panel2.add(deleteProfileButton, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, 1, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        useProfileButton = new JButton();
-        useProfileButton.setText("Use Profile");
-        panel2.add(useProfileButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        assumeRoleButton = new JButton();
-        assumeRoleButton.setText("Assume Role");
-        panel.add(assumeRoleButton, new GridConstraints(10, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    private boolean isSigV4Request(IRequestInfo request) {
+        List<String> headers = request.getHeaders();
+
+        //This is how v1 decided if it should be signed
+        //Looks for both x-amz-date AND authorization
+        return (headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("x-amz-date")))
+                && headers.stream().anyMatch((str -> str.trim().toLowerCase().contains("authorization"))));
     }
 
-    /**
-     * @noinspection ALL
-     */
-    public JComponent $$$getRootComponent$$$() {
-        return panel;
+    private Optional<Profile> getSigningProfileForRequest(ParsedAuthHeader authHeader) {
+        //If we have a default profile set, just use it
+        if (model.alwaysSignWithProfile != null) {
+            return Optional.of(model.alwaysSignWithProfile);
+        }
+
+        String headerAccessKey = authHeader.getAccessKey();
+
+        //Check if any of the profiles are using this access key as their key id
+        Optional<Profile> accessKeyMatchedProfileOptional = model.profiles.stream().filter(profile -> {
+            return profile.getKeyId().isPresent();
+        }).filter(profile -> {
+            return headerAccessKey.trim().equals(profile.getKeyId().get().trim());
+        }).findFirst();
+
+        if (accessKeyMatchedProfileOptional.isPresent()) {
+            LogWriter.logDebug("Auth header access key \"" + headerAccessKey + "\" matched profile: " + accessKeyMatchedProfileOptional.get().getName());
+        } else {
+            LogWriter.logDebug("Auth header access key \"" + headerAccessKey + "\" did not match a profile.");
+        }
+
+        return accessKeyMatchedProfileOptional;
     }
 }

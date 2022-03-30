@@ -1,0 +1,25 @@
+Global settings
+aws_access_key_id
+Specifies the AWS access key used as part of the credentials to authenticate the command request. Although this can be stored in the config file, we recommend that you store this in the credentials file.
+
+Can be overridden by the AWS_ACCESS_KEY_ID environment variable. You can't specify the access key ID as a command line option.
+
+aws_access_key_id = AKIAIOSFODNN7EXAMPLE
+aws_secret_access_key
+Specifies the AWS secret key used as part of the credentials to authenticate the command request. Although this can be stored in the config file, we recommend that you store this in the credentials file.
+
+Can be overridden by the AWS_SECRET_ACCESS_KEY environment variable. You can't specify the secret access key as a command line option.
+
+aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+aws_session_token
+Specifies an AWS session token. A session token is required only if you manually specify temporary security credentials. Although this can be stored in the config file, we recommend that you store this in the credentials file.
+
+Can be overridden by the AWS_SESSION_TOKEN environment variable. You can't specify the session token as a command line option.
+
+aws_session_token = AQoEXAMPLEH4aoAH0gNCAPyJxz4BlCFFxWNE1OPTgk5TthT+FvwqnKwRcOIfrRh3c/LTo6UDdyJwOOvEVPvLXCrrrUtdnniCEXAMPLE/IvU1dYUg2RVAJBanLiHb4IgRmpRV3zrkuWJOgQs8IZZaIv2BXIa2R4Olgk
+ca_bundle
+Specifies a CA certificate bundle (a file with the .pem extension) that is used to verify SSL certificates.
+
+Can be overridden by the AWS_CA_Bundle environment variable or the --ca-bundle command line option.
+
+ca_bundle = dev/apps/ca-certs/cabundle-2019mar05.pem

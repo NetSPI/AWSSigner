@@ -1,0 +1,7 @@
+[profile1]
+aws_access_key_id=AKIAIOSFODAA7EXAMPLE
+aws_secret_access_key=AAalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+[profile2]
+aws_access_key_id=AKIAIOSFODBB7EXAMPLE
+aws_secret_access_key=BBalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
