@@ -1,0 +1,1459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <Properties>
+    <Property name="name" type="java.lang.String" value="topPanel" noResource="true"/>
+  </Properties>
+  <Events>
+    <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="formMouseClicked"/>
+  </Events>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Component id="globalSettingsPanel" max="32767" attributes="0"/>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="1" attributes="0">
+                      <Component id="profileManagementDescriptionLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="profileManagementLabel" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="deleteProfileButton" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="importProfilesButton" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="copyProfileButton" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="exportProfilesButton" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="addProfileButton" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="profileListScrollPane" min="-2" pref="153" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <Component id="rightSideParentPanel" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="globalSettingsPanel" min="-2" pref="94" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="rightSideParentPanel" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="profileManagementLabel" min="-2" pref="30" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="profileManagementDescriptionLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="addProfileButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="deleteProfileButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="copyProfileButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="importProfilesButton" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="exportProfilesButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="profileListScrollPane" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="globalSettingsPanel">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="globalSettingsLabel" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="globalSettingsDescriptionLabel" min="-2" max="-2" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="signingEnabledCheckbox" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                                  <Component id="alwaysSignWithProfileLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="alwaysSignWithProfileComboBox" min="-2" pref="349" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="logLevelLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="logLevelComboBox" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <EmptySpace min="248" pref="391" max="32767" attributes="0"/>
+              </Group>
+              <Component id="globalSettingsSeparator" alignment="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="globalSettingsLabel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="globalSettingsDescriptionLabel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="signingEnabledCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="alwaysSignWithProfileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="alwaysSignWithProfileComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="logLevelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="logLevelComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="globalSettingsSeparator" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="globalSettingsLabel">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font bold="true" component="globalSettingsLabel" property="font" relativeSize="false" size="15"/>
+              </FontInfo>
+            </Property>
+            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="33" green="66" red="ff" type="rgb"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Global Settings"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="globalSettingsDescriptionLabel">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="globalSettingsDescriptionLabel" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Change extension behavior. Set &lt;i&gt;Always Sign With&lt;/i&gt; to force signing of all requests with the specified profile credentials."/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="signingEnabledCheckbox">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="signingEnabledCheckbox" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Signing Enabled"/>
+            <Property name="toolTipText" type="java.lang.String" value="Enable/Disable request signing globally"/>
+            <Property name="horizontalTextPosition" type="int" value="10"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JLabel" name="alwaysSignWithProfileLabel">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="alwaysSignWithProfileLabel" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="alwaysSignWithProfileComboBox"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Always Sign With:"/>
+            <Property name="toolTipText" type="java.lang.String" value="Sign all requests with the selected profile"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="alwaysSignWithProfileComboBox">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="alwaysSignWithProfileComboBox" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Sign all requests with the selected profile"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JLabel" name="logLevelLabel">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="logLevelLabel" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="logLevelComboBox"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Log Level"/>
+            <Property name="toolTipText" type="java.lang.String" value="Set the extension&apos;s logging verbosity"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="logLevelComboBox">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="logLevelComboBox" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="3">
+                <StringItem index="0" value="Error"/>
+                <StringItem index="1" value="Info"/>
+                <StringItem index="2" value="Debug"/>
+              </StringArray>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Set the extension&apos;s logging verbosity"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JSeparator" name="globalSettingsSeparator">
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JLabel" name="profileManagementLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+          <FontInfo relative="true">
+            <Font bold="true" component="profileManagementLabel" property="font" relativeSize="false" size="15"/>
+          </FontInfo>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="33" green="66" red="ff" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Profile Management"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="profileManagementDescriptionLabel">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+          <FontInfo relative="true">
+            <Font component="profileManagementDescriptionLabel" property="font" relativeSize="true" size="0"/>
+          </FontInfo>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Manage profiles which provide AWS credentials"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="addProfileButton">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+          <FontInfo relative="true">
+            <Font component="addProfileButton" property="font" relativeSize="true" size="0"/>
+          </FontInfo>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Add"/>
+        <Property name="toolTipText" type="java.lang.String" value="Add a new profile"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="deleteProfileButton">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+          <FontInfo relative="true">
+            <Font component="deleteProfileButton" property="font" relativeSize="true" size="0"/>
+          </FontInfo>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Delete"/>
+        <Property name="toolTipText" type="java.lang.String" value="Delete the currently selected profile"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="copyProfileButton">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+          <FontInfo relative="true">
+            <Font component="copyProfileButton" property="font" relativeSize="true" size="0"/>
+          </FontInfo>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Copy"/>
+        <Property name="toolTipText" type="java.lang.String" value="Copy the currently selected profile"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="importProfilesButton">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+          <FontInfo relative="true">
+            <Font component="importProfilesButton" property="font" relativeSize="true" size="0"/>
+          </FontInfo>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Import"/>
+        <Property name="toolTipText" type="java.lang.String" value="Import profiles from disk or environment variables"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="exportProfilesButton">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+          <FontInfo relative="true">
+            <Font component="exportProfilesButton" property="font" relativeSize="true" size="0"/>
+          </FontInfo>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Export"/>
+        <Property name="toolTipText" type="java.lang.String" value="Export configured profiles"/>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="profileListScrollPane">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JList" name="profileList">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="profileList" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
+              <StringArray count="0"/>
+            </Property>
+            <Property name="selectionMode" type="int" value="0"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+          </AuxValues>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="rightSideParentPanel">
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="profileConfigurationScrollPane" pref="0" max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="profileConfigurationScrollPane" alignment="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JScrollPane" name="profileConfigurationScrollPane">
+          <Properties>
+            <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+          </AuxValues>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="profileConfigurationPanel">
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="102" attributes="0">
+                                          <Component id="profileStatusLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="profileStatusTextLabel" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="profileServiceLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="profileKeyIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="profileRegionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                              <Component id="profileServiceTextField" alignment="0" pref="625" max="32767" attributes="0"/>
+                                              <Component id="profileRegionTextField" alignment="0" max="32767" attributes="0"/>
+                                              <Component id="profileKeyIdTextField" max="32767" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="profileEnabledCheckbox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="profileInScopeOnlyCheckbox" min="-2" max="-2" attributes="0"/>
+                                      </Group>
+                                      <Component id="testProfileButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <Group type="102" attributes="0">
+                                  <Component id="profileConfigurationLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="profileNameLabel" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                      <Component id="credentialCardContainerPanel" alignment="0" max="32767" attributes="0"/>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="profileConfigurationLabel" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                              <Component id="profileNameLabel" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="profileStatusLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="profileStatusTextLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="profileEnabledCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="profileInScopeOnlyCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="profileRegionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="profileRegionTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="profileServiceLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="profileServiceTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="profileKeyIdLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="profileKeyIdTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="testProfileButton" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Component id="credentialCardContainerPanel" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JLabel" name="profileConfigurationLabel">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileConfigurationLabel" property="font" relativeSize="false" size="15"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="33" green="66" red="ff" type="rgb"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Profile Configuration:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="profileNameLabel">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileNameLabel" property="font" relativeSize="false" size="15"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="[Add A Profile To Begin]"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JLabel" name="profileStatusLabel">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileStatusLabel" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Status:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JLabel" name="profileStatusTextLabel">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font component="profileStatusTextLabel" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Must add profile to begin editing"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="profileEnabledCheckbox">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileEnabledCheckbox" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="selected" type="boolean" value="true"/>
+                    <Property name="text" type="java.lang.String" value="Enabled"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Enables/Disables this profile"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                    <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+                      <Insets value="[2, 0, 2, 2]"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="profileInScopeOnlyCheckbox">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileInScopeOnlyCheckbox" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="In-Scope Only"/>
+                    <Property name="toolTipText" type="java.lang.String" value="When checked, only in-scope requests are signed with this profile"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                    <Property name="horizontalTextPosition" type="int" value="10"/>
+                    <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+                      <Insets value="[2, 0, 2, 2]"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JLabel" name="profileRegionLabel">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileRegionLabel" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="profileRegionTextField"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Region:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="profileRegionTextField">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font component="profileRegionTextField" property="font" relativeSize="true" size="0"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="If set, this will be the region set for all signed requests, overriding the value in the original request"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JLabel" name="profileServiceLabel">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileServiceLabel" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="profileServiceTextField"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Service:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="profileServiceTextField">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font component="profileServiceTextField" property="font" relativeSize="true" size="0"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="If set, this will be the service set for all signed requests, overriding the value in the original request"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JLabel" name="profileKeyIdLabel">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="profileKeyIdLabel" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                      <ComponentRef name="profileKeyIdTextField"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Key Id:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JTextField" name="profileKeyIdTextField">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font component="profileKeyIdTextField" property="font" relativeSize="true" size="0"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="toolTipText" type="java.lang.String" value="If set, this profile will sign all requests which were originally signed with this Key Id. The request will be resigned with the configuration below"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false, Pattern.compile(&quot;.+&quot;))"/>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JButton" name="testProfileButton">
+                  <Properties>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                      <FontInfo relative="true">
+                        <Font bold="true" component="testProfileButton" property="font" relativeSize="true" size="1"/>
+                      </FontInfo>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Test Profile Credentials"/>
+                    <Property name="toolTipText" type="java.lang.String" value="Tests the credential configuration below and updates this profile&apos;s status with the results"/>
+                    <Property name="enabled" type="boolean" value="false"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+                </Component>
+                <Container class="javax.swing.JPanel" name="credentialCardContainerPanel">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="javax.swing.BorderFactory.createEtchedBorder(EtchedBorder.RAISED)" type="code"/>
+                    </Property>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                  </AuxValues>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="staticCredentialsPanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="" noResource="true"/>
+                      </Properties>
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                      </AuxValues>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="static_credentials_card"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="staticCredentialsConfigurationLabel" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="staticSessionTokenLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="staticSecretKeyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="staticAccessKeyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                              <Component id="staticSecretKeyTextField" alignment="0" pref="578" max="32767" attributes="0"/>
+                                              <Component id="staticSessionTokenTextField" max="32767" attributes="0"/>
+                                              <Component id="staticAccessKeyTextField" alignment="0" max="32767" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace pref="761" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="staticCredentialsConfigurationLabel" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="staticAccessKeyLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="staticAccessKeyTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="staticSecretKeyLabel" min="-2" max="-2" attributes="0"/>
+                                      <Component id="staticSecretKeyTextField" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="staticSessionTokenLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="staticSessionTokenTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="staticCredentialsConfigurationLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="staticCredentialsConfigurationLabel" property="font" relativeSize="false" size="15"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="33" green="66" red="ff" type="rgb"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Static Credentials Configuration"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="staticAccessKeyLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="staticAccessKeyLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="staticAccessKeyTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Access Key:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The access key of the credentials"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="staticAccessKeyTextField">
+                          <Properties>
+                            <Property name="toolTipText" type="java.lang.String" value="The access key to sign requests"/>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(true, Pattern.compile(&quot;[A-Z0-9]{20,}&quot;))"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="staticSecretKeyLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="staticSecretKeyLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="staticSecretKeyTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Secret Key:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The secret key of the credentials."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="staticSecretKeyTextField">
+                          <Properties>
+                            <Property name="toolTipText" type="java.lang.String" value="The secret key to sign requests"/>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(true, Pattern.compile(&quot;[A-Za-z0-9/+=]{40,}&quot;))"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="staticSessionTokenLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="staticSessionTokenLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="staticSessionTokenTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Session Token:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The optional session token of the credentials."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="staticSessionTokenTextField">
+                          <Properties>
+                            <Property name="toolTipText" type="java.lang.String" value="The optional session token to sign requests"/>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="assumeRolePanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="" noResource="true"/>
+                      </Properties>
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                      </AuxValues>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="assume_role_card"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="assumeRoleConfigurationLabel" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="102" attributes="0">
+                                                  <Group type="103" groupAlignment="0" attributes="0">
+                                                      <Component id="assumeRoleDurationLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      <Component id="assumeRoleExternalIdLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  </Group>
+                                                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                                      <Component id="assumeRoleExternalIdTextField" alignment="0" max="32767" attributes="0"/>
+                                                      <Component id="assumeRoleSessionNameTextField" alignment="0" max="32767" attributes="0"/>
+                                                      <Component id="assumeRoleRoleArnTextField" alignment="0" max="32767" attributes="0"/>
+                                                      <Component id="assumeRoleDurationTextField" max="32767" attributes="0"/>
+                                                      <Component id="assumeRoleAssumerProfileComboBox" alignment="0" min="-2" pref="542" max="-2" attributes="0"/>
+                                                  </Group>
+                                              </Group>
+                                              <Component id="assumeRoleSessionNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="assumeRoleAssumerProfileLabel" min="-2" max="-2" attributes="0"/>
+                                              <Component id="assumeRoleRoleArnLabel" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace pref="754" max="32767" attributes="0"/>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="assumeRoleSessionPolicyPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="0" pref="668" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="assumeRoleConfigurationLabel" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="assumeRoleAssumerProfileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="assumeRoleAssumerProfileComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="assumeRoleRoleArnLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="assumeRoleRoleArnTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="assumeRoleSessionNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="assumeRoleSessionNameTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="assumeRoleExternalIdLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="assumeRoleExternalIdTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="assumeRoleDurationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="assumeRoleDurationTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="assumeRoleSessionPolicyPanel" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="assumeRoleConfigurationLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="assumeRoleConfigurationLabel" property="font" relativeSize="false" size="15"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="33" green="66" red="ff" type="rgb"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="AssumeRole Configuration"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="assumeRoleAssumerProfileLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="assumeRoleAssumerProfileLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="assumeRoleAssumerProfileComboBox"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Assumer Profile:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="Set the profile which assume the specified role"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="assumeRoleAssumerProfileComboBox">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font component="assumeRoleAssumerProfileComboBox" property="font" relativeSize="true" size="0"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="Set the profile which will be used to assume the role specified below"/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="assumeRoleRoleArnLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="assumeRoleRoleArnLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="assumeRoleRoleArnTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Role ARN:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The role to be assumed"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="assumeRoleRoleArnTextField">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font component="assumeRoleRoleArnTextField" property="font" relativeSize="true" size="0"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="The role to be assumed. This role&apos;s trust policy must trust the &quot;Assumer Profile&quot; to assume this role"/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(true, Pattern.compile(&quot;arn:.+:iam::[0-9]{12}:role/.+&quot;))"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="assumeRoleSessionNameLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="assumeRoleSessionNameLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="assumeRoleSessionNameTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Session Name:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="An identifier for the assumed role session."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="assumeRoleSessionNameTextField">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font component="assumeRoleSessionNameTextField" property="font" relativeSize="true" size="0"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="An identifier for the assumed role session."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="assumeRoleExternalIdLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="assumeRoleExternalIdLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="assumeRoleExternalIdTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="External Id:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="A unique identifier that might be required when you assume a role in another account."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="assumeRoleExternalIdTextField">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font component="assumeRoleExternalIdTextField" property="font" relativeSize="true" size="0"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="A unique identifier that may be required when you assume the role."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="assumeRoleDurationLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="assumeRoleDurationLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="assumeRoleDurationTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Duration (Seconds):"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The lifetime of the session. The credentials will be renewed as required."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="assumeRoleDurationTextField">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font component="assumeRoleDurationTextField" property="font" relativeSize="true" size="0"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="toolTipText" type="java.lang.String" value="The lifetime of the session. The credentials will be renewed as required."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false, Pattern.compile(&quot;\\d+&quot;))"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Container class="javax.swing.JPanel" name="assumeRoleSessionPolicyPanel">
+
+                          <Layout>
+                            <DimensionLayout dim="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="assumeRoleSessionPolicyConfigurationLabel" min="-2" max="-2" attributes="0"/>
+                                          <Component id="assumeRoleSessionPolicyDescriptionLabel" min="-2" pref="680" max="-2" attributes="0"/>
+                                          <Component id="assumeRoleSessionPolicyPrettifyButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="assumeRoleSessionPolicyScrollPane" alignment="0" min="-2" pref="680" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace pref="90" max="32767" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                            <DimensionLayout dim="1">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="assumeRoleSessionPolicyConfigurationLabel" min="-2" pref="30" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="assumeRoleSessionPolicyDescriptionLabel" pref="47" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="assumeRoleSessionPolicyScrollPane" pref="357" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="assumeRoleSessionPolicyPrettifyButton" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                            </DimensionLayout>
+                          </Layout>
+                          <SubComponents>
+                            <Component class="javax.swing.JLabel" name="assumeRoleSessionPolicyConfigurationLabel">
+                              <Properties>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                                  <FontInfo relative="true">
+                                    <Font bold="true" component="assumeRoleSessionPolicyConfigurationLabel" property="font" relativeSize="false" size="15"/>
+                                  </FontInfo>
+                                </Property>
+                                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                                  <Color blue="33" green="66" red="ff" type="rgb"/>
+                                </Property>
+                                <Property name="text" type="java.lang.String" value="Session Policy Configuration"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="assumeRoleSessionPolicyDescriptionLabel">
+                              <Properties>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                                  <FontInfo relative="true">
+                                    <Font component="assumeRoleSessionPolicyDescriptionLabel" property="font" relativeSize="true" size="0"/>
+                                  </FontInfo>
+                                </Property>
+                                <Property name="text" type="java.lang.String" value="&lt;html&gt; The session policy is an &lt;b&gt;optional&lt;/b&gt; IAM policy which further &lt;b&gt;restricts&lt;/b&gt; the permissions of the assumed role. The permissions for a session are the intersection of the identity-based policies for the IAM role used to create the session and the session policy."/>
+                                <Property name="verticalAlignment" type="int" value="1"/>
+                              </Properties>
+                            </Component>
+                            <Container class="javax.swing.JScrollPane" name="assumeRoleSessionPolicyScrollPane">
+                              <AuxValues>
+                                <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                              </AuxValues>
+
+                              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                              <SubComponents>
+                                <Component class="javax.swing.JTextArea" name="assumeRoleSessionPolicyTextArea">
+                                  <Properties>
+                                    <Property name="columns" type="int" value="20"/>
+                                    <Property name="rows" type="int" value="5"/>
+                                  </Properties>
+                                  <AuxValues>
+                                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                                  </AuxValues>
+                                </Component>
+                              </SubComponents>
+                            </Container>
+                            <Component class="javax.swing.JButton" name="assumeRoleSessionPolicyPrettifyButton">
+                              <Properties>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                                  <FontInfo relative="true">
+                                    <Font component="assumeRoleSessionPolicyPrettifyButton" property="font" relativeSize="true" size="0"/>
+                                  </FontInfo>
+                                </Property>
+                                <Property name="text" type="java.lang.String" value="Prettify"/>
+                                <Property name="toolTipText" type="java.lang.String" value="Attempt to format the session policy."/>
+                              </Properties>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                              </AuxValues>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="commandPanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="" noResource="true"/>
+                      </Properties>
+                      <AuxValues>
+                        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                      </AuxValues>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
+                          <CardConstraints cardName="command_card"/>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="commandConfigurationLabel" min="-2" max="-2" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="commandExtractedSectionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                                                  <Component id="commandConfigurationDescriptionLabel" alignment="0" pref="684" max="32767" attributes="0"/>
+                                                  <Group type="102" alignment="0" attributes="0">
+                                                      <Group type="103" groupAlignment="0" attributes="0">
+                                                          <Component id="commandDurationLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                          <Component id="commandCommandLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                      </Group>
+                                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                                          <Component id="commandCommandTextField" pref="548" max="32767" attributes="0"/>
+                                                          <Component id="commandDurationTextField" max="32767" attributes="0"/>
+                                                      </Group>
+                                                  </Group>
+                                              </Group>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
+                                                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                      <Component id="commandExtractedSectionDescriptionLabel" pref="672" max="32767" attributes="0"/>
+                                                      <Group type="102" attributes="0">
+                                                          <Group type="103" groupAlignment="0" attributes="0">
+                                                              <Component id="commandExtractedSessionTokenLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                              <Component id="commandExtractedSecretKeyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                              <Component id="commandExtractedAccessKeyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                          </Group>
+                                                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                              <Component id="commandExtractedSecretKeyTextField" alignment="0" pref="567" max="32767" attributes="0"/>
+                                                              <Component id="commandExtractedAccessKeyTextField" alignment="0" max="32767" attributes="0"/>
+                                                              <Component id="commandExtractedSessionTokenTextField" max="32767" attributes="0"/>
+                                                          </Group>
+                                                      </Group>
+                                                  </Group>
+                                              </Group>
+                                          </Group>
+                                      </Group>
+                                  </Group>
+                                  <EmptySpace pref="760" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="commandConfigurationLabel" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="commandConfigurationDescriptionLabel" pref="71" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="commandCommandLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="commandCommandTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="commandDurationLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="commandDurationTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="commandExtractedSectionLabel" min="-2" pref="30" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="commandExtractedSectionDescriptionLabel" pref="36" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="commandExtractedAccessKeyLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="commandExtractedAccessKeyTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="commandExtractedSecretKeyLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                      <Component id="commandExtractedSecretKeyTextField" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="commandExtractedSessionTokenLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="commandExtractedSessionTokenTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace pref="342" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="commandConfigurationLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="commandConfigurationLabel" property="font" relativeSize="false" size="15"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="33" green="66" red="ff" type="rgb"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Command Configuration"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandConfigurationDescriptionLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="&lt;html&gt;The provided command will be executed to obtain credentials for request signing, as required. If a &lt;i&gt;Duration&lt;/i&gt; value is provided, the credentials will considered valid for that duration. If a &lt;i&gt;Duration&lt;/i&gt; value is not provided, the credentials will be cached for 60 minutes. If the &lt;i&gt;Duration&lt;/i&gt; value is value is 0, then the command will be executed before each request. The extension will attempt to identify and extract the first valid Access Key, Secret Key and Session Token in the command stdout output."/>
+                            <Property name="verticalAlignment" type="int" value="1"/>
+                            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[500, 14]"/>
+                            </Property>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandCommandLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="commandCommandLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Command:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The command to be executed to fetch credentials."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="commandCommandTextField">
+                          <Properties>
+                            <Property name="toolTipText" type="java.lang.String" value="The command to be executed to fetch credentials."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(true)"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandDurationLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="commandDurationLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Duration (Seconds):"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The lifetime of the session. The credentials will be renewed as required."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="commandDurationTextField">
+                          <Properties>
+                            <Property name="toolTipText" type="java.lang.String" value="The lifetime of the credentials returned by the command. The credentials will be renewed as required."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false, Pattern.compile(&quot;\\d+&quot;))"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandExtractedSectionLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="commandExtractedSectionLabel" property="font" relativeSize="false" size="15"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                              <Color blue="33" green="66" red="ff" type="rgb"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Extracted Credentials"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandExtractedSectionDescriptionLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="&lt;html&gt;Click the &lt;i&gt;Test Profile Credentials&lt;/i&gt; button above to test the provided command, credential extraction and the credentials&apos; validity. The most recently extracted credentials are shown below."/>
+                            <Property name="verticalAlignment" type="int" value="1"/>
+                            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                              <Dimension value="[500, 14]"/>
+                            </Property>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandExtractedAccessKeyLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="commandExtractedAccessKeyLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="commandExtractedAccessKeyTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Access Key:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The most recently extracted access key."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="commandExtractedAccessKeyTextField">
+                          <Properties>
+                            <Property name="editable" type="boolean" value="false"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The most recently extracted access key."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandExtractedSecretKeyLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="commandExtractedSecretKeyLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="commandExtractedSecretKeyTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Secret Key:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The most recently extracted secret key."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="commandExtractedSecretKeyTextField">
+                          <Properties>
+                            <Property name="editable" type="boolean" value="false"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The most recently extracted secret key."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="commandExtractedSessionTokenLabel">
+                          <Properties>
+                            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                              <FontInfo relative="true">
+                                <Font bold="true" component="commandExtractedSessionTokenLabel" property="font" relativeSize="true" size="1"/>
+                              </FontInfo>
+                            </Property>
+                            <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+                              <ComponentRef name="commandExtractedSessionTokenTextField"/>
+                            </Property>
+                            <Property name="text" type="java.lang.String" value="Session Token:"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The most recently extracted session token."/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="commandExtractedSessionTokenTextField">
+                          <Properties>
+                            <Property name="editable" type="boolean" value="false"/>
+                            <Property name="toolTipText" type="java.lang.String" value="The most recently extracted session token."/>
+                          </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new FormattedHintTextField(false)"/>
+                            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                          </AuxValues>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

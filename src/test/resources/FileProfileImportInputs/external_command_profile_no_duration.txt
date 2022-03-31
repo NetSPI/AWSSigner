@@ -1,0 +1,2 @@
+[profile developer]
+credential_process = /opt/bin/awscreds-custom --username helen

@@ -1,0 +1,6 @@
+[default]
+aws_access_key_id=AKIAIOSFODNN7EXAMPLE
+aws_secret_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+ca_bundle = dev/apps/ca-certs/cabundle-2019mar05.pem
+cli_auto_prompt = on-partial
+cli_binary_format = raw-in-base64-out

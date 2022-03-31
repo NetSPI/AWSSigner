@@ -1,0 +1,3 @@
+[default]
+AWS_access_key_id=AKIAIOSFODNN7EXAMPLE
+aws_SECRET_access_key=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
