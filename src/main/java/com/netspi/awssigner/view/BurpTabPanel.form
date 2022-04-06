@@ -167,6 +167,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="&lt;html&gt;Change extension behavior. Set &lt;i&gt;Always Sign With&lt;/i&gt; to force signing of all requests with the specified profile credentials."/>
           </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="globalSettingsDescriptionLabel.putClientProperty(&quot;html.disable&quot;, null);"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JCheckBox" name="signingEnabledCheckbox">
           <Properties>
@@ -1146,6 +1149,9 @@
                                 <Property name="text" type="java.lang.String" value="&lt;html&gt; The session policy is an &lt;b&gt;optional&lt;/b&gt; IAM policy which further &lt;b&gt;restricts&lt;/b&gt; the permissions of the assumed role. The permissions for a session are the intersection of the identity-based policies for the IAM role used to create the session and the session policy."/>
                                 <Property name="verticalAlignment" type="int" value="1"/>
                               </Properties>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="assumeRoleSessionPolicyDescriptionLabel.putClientProperty(&quot;html.disable&quot;, null);"/>
+                              </AuxValues>
                             </Component>
                             <Container class="javax.swing.JScrollPane" name="assumeRoleSessionPolicyScrollPane">
                               <AuxValues>
@@ -1310,6 +1316,9 @@
                               <Dimension value="[500, 14]"/>
                             </Property>
                           </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="commandConfigurationDescriptionLabel.putClientProperty(&quot;html.disable&quot;, null);"/>
+                          </AuxValues>
                         </Component>
                         <Component class="javax.swing.JLabel" name="commandCommandLabel">
                           <Properties>
@@ -1372,6 +1381,9 @@
                               <Dimension value="[500, 14]"/>
                             </Property>
                           </Properties>
+                          <AuxValues>
+                            <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="commandExtractedSectionDescriptionLabel.putClientProperty(&quot;html.disable&quot;, null);"/>
+                          </AuxValues>
                         </Component>
                         <Component class="javax.swing.JLabel" name="commandExtractedAccessKeyLabel">
                           <Properties>

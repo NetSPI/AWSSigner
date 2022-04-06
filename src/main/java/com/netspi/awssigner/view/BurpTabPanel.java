@@ -119,6 +119,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
 
         globalSettingsDescriptionLabel.setFont(globalSettingsDescriptionLabel.getFont());
         globalSettingsDescriptionLabel.setText("<html>Change extension behavior. Set <i>Always Sign With</i> to force signing of all requests with the specified profile credentials.");
+        globalSettingsDescriptionLabel.putClientProperty("html.disable", null);
 
         signingEnabledCheckbox.setFont(signingEnabledCheckbox.getFont());
         signingEnabledCheckbox.setSelected(true);
@@ -405,6 +406,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
         assumeRoleSessionPolicyDescriptionLabel.setFont(assumeRoleSessionPolicyDescriptionLabel.getFont());
         assumeRoleSessionPolicyDescriptionLabel.setText("<html> The session policy is an <b>optional</b> IAM policy which further <b>restricts</b> the permissions of the assumed role. The permissions for a session are the intersection of the identity-based policies for the IAM role used to create the session and the session policy.");
         assumeRoleSessionPolicyDescriptionLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        assumeRoleSessionPolicyDescriptionLabel.putClientProperty("html.disable", null);
 
         assumeRoleSessionPolicyTextArea.setColumns(20);
         assumeRoleSessionPolicyTextArea.setRows(5);
@@ -511,6 +513,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
         commandConfigurationDescriptionLabel.setText("<html>The provided command will be executed to obtain credentials for request signing, as required. If a <i>Duration</i> value is provided, the credentials will considered valid for that duration. If a <i>Duration</i> value is not provided, the credentials will be cached for 60 minutes. If the <i>Duration</i> value is value is 0, then the command will be executed before each request. The extension will attempt to identify and extract the first valid Access Key, Secret Key and Session Token in the command stdout output.");
         commandConfigurationDescriptionLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         commandConfigurationDescriptionLabel.setPreferredSize(new java.awt.Dimension(500, 14));
+        commandConfigurationDescriptionLabel.putClientProperty("html.disable", null);
 
         commandCommandLabel.setFont(commandCommandLabel.getFont().deriveFont(commandCommandLabel.getFont().getStyle() | java.awt.Font.BOLD, commandCommandLabel.getFont().getSize()+1));
         commandCommandLabel.setText("Command:");
@@ -531,6 +534,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
         commandExtractedSectionDescriptionLabel.setText("<html>Click the <i>Test Profile Credentials</i> button above to test the provided command, credential extraction and the credentials' validity. The most recently extracted credentials are shown below.");
         commandExtractedSectionDescriptionLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         commandExtractedSectionDescriptionLabel.setPreferredSize(new java.awt.Dimension(500, 14));
+        commandExtractedSectionDescriptionLabel.putClientProperty("html.disable", null);
 
         commandExtractedAccessKeyLabel.setFont(commandExtractedAccessKeyLabel.getFont().deriveFont(commandExtractedAccessKeyLabel.getFont().getStyle() | java.awt.Font.BOLD, commandExtractedAccessKeyLabel.getFont().getSize()+1));
         commandExtractedAccessKeyLabel.setLabelFor(commandExtractedAccessKeyTextField);

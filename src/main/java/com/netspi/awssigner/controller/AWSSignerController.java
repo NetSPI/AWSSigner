@@ -294,6 +294,7 @@ public class AWSSignerController {
                     Profile newProfile = newProfileOptional.get();
                     if (profile.getName().equals(newProfile.getName())) {
                         //Showing the same profile. we can update UI fields. 
+                        view.profileStatusTextLabel.putClientProperty("html.disable", null);
                         view.profileStatusTextLabel.setText("<html><font color='darkgreen'>Success</font></html>");
                         if (profile instanceof CommandProfile) {
                             view.commandExtractedAccessKeyTextField.setText(creds.getAccessKey());
@@ -781,6 +782,7 @@ public class AWSSignerController {
 
         //The first profile is special since it represents NOT having a default profile
         JRadioButtonMenuItem noDefaultProfileItem = new JRadioButtonMenuItem("<html><i>No Profile</i></html>", model.alwaysSignWithProfile == null);
+        noDefaultProfileItem.putClientProperty("html.disable", null);
         noDefaultProfileItem.addActionListener((event) -> {
             logDebug("Always sign with profile unset via context menu");
             model.alwaysSignWithProfile = null;
