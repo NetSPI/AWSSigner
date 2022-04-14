@@ -310,7 +310,8 @@ public class AWSSignerController {
                     //Quick check to see if we need to report the cause at one level deeper
                     Throwable cause = ex.getCause() == null ? ex : ex.getCause();
                     logError("Cause: " + cause.getMessage());
-                    view.profileStatusTextLabel.setText("Error testing profile: " + cause.getMessage());
+                    view.profileStatusTextLabel.putClientProperty("html.disable", null);
+                    view.profileStatusTextLabel.setText("<html><b>Error testing profile:</b> " + cause.getMessage() + "</html>");
                 }
             }).start();
 
@@ -373,7 +374,8 @@ public class AWSSignerController {
                     logError("Unable to parse session policy into JSON object and pretty print. Current value: " + sessionPolicy);
                     //Quick check to see if we need to report the cause at one level deeper
                     Throwable cause = ex.getCause() == null ? ex : ex.getCause();
-                    view.profileStatusTextLabel.setText("Session policy error: " + cause.getMessage());
+                    view.profileStatusTextLabel.putClientProperty("html.disable", null);
+                    view.profileStatusTextLabel.setText("<html><b>Session policy error:</b> " + cause.getMessage() + "</html>");
                 }
             } else {
                 logDebug("There's no current session policy. Nothing to set.");
