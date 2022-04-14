@@ -294,8 +294,7 @@ public class AWSSignerController {
                     Profile newProfile = newProfileOptional.get();
                     if (profile.getName().equals(newProfile.getName())) {
                         //Showing the same profile. we can update UI fields. 
-                        view.profileStatusTextLabel.putClientProperty("html.disable", null);
-                        view.profileStatusTextLabel.setText("<html><font color='darkgreen'>Success</font></html>");
+                        view.profileStatusTextLabel.setText("Success");
                         if (profile instanceof CommandProfile) {
                             view.commandExtractedAccessKeyTextField.setText(creds.getAccessKey());
                             view.commandExtractedSecretKeyTextField.setText(creds.getSecretKey());
