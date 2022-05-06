@@ -118,7 +118,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
 
         //Get the original host header. 
         String originalHost = null;
-        int originalHostPort = uri.getPort();
+        int originalHostPort = -1;
         for (String header : allHeaders) {
             if (header.toLowerCase().startsWith("host:")) {
                 String originalHostHeaderValue = header.replaceFirst("(?i)host:", "").trim();
@@ -137,6 +137,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
         //Error if we can't find the original host header, use what's in the URI
         if (originalHost == null || originalHost.isEmpty()) {
             originalHost = uri.getHost();
+            originalHostPort = uri.getPort();
             LogWriter.logInfo("No host header value found in original headers. Falling back to value from URI: " + targetURLHost);
         }
 
