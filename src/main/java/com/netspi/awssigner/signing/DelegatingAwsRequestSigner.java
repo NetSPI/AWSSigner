@@ -11,6 +11,7 @@ import com.netspi.awssigner.model.Profile;
 import java.io.ByteArrayInputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.signer.Aws4Signer;
@@ -100,14 +102,58 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
         }
         LogWriter.logDebug("signedHeaderMap: " + signedHeaderMap);
 
-        // build request object for signing
+        //Build request object for signing
         URI uri;
         try {
             uri = request.getUrl().toURI();
+            LogWriter.logDebug("Identified target URI as: " + uri);
         } catch (URISyntaxException ex) {
             final String errorMessage = "Bad Request URL. Not valid syntax. Error: " + ex.getMessage();
             LogWriter.logError(errorMessage);
             throw new SigningException(errorMessage, ex);
+        }
+
+        String targetURLHost = uri.getHost();
+        LogWriter.logDebug("Extracted host value from target URI as: " + targetURLHost);
+
+        //Get the original host header. 
+        String originalHost = null;
+        int originalHostPort = -1;
+        for (String header : allHeaders) {
+            if (header.toLowerCase().startsWith("host:")) {
+                String originalHostHeaderValue = header.replaceFirst("(?i)host:", "").trim();
+                LogWriter.logDebug("Extracted host header value from original headers as: " + originalHostHeaderValue);
+                if (originalHostHeaderValue.contains(":")) {
+                    String[] originalHostHeaderParts = originalHostHeaderValue.split(":", 2);
+                    originalHost = originalHostHeaderParts[0];
+                    originalHostPort = Integer.parseInt(originalHostHeaderParts[1]);
+                } else {
+                    originalHost = originalHostHeaderValue;
+                }
+                break;
+            }
+        }
+
+        //If we can't find the host header, use what's in the URI
+        if (originalHost == null || originalHost.isEmpty()) {
+            originalHost = uri.getHost();
+            originalHostPort = uri.getPort();
+            LogWriter.logInfo("No host header value found in original headers. Falling back to value from URI: " + targetURLHost);
+        }
+
+        // If the value of the host header doesn't match the value in the target URL, we need to swap the host header value into the URL
+        // This maintains compatibility with SignerV1 and supports proxies where the URL may point to a localhost endpoint, 
+        // but the request gets forwarded onto a real AWS endpoint. The host header must be the real AWS endpoint and the SigV4 signature must match
+        // even though the URL has the proxy endpoint. 
+        if (!targetURLHost.equals(originalHost)) {
+            try {
+                uri = new URI(uri.getScheme(), uri.getUserInfo(), originalHost, originalHostPort, uri.getPath(), uri.getQuery(), uri.getFragment());
+                LogWriter.logDebug("Updated URI for signing as: " + uri);
+            } catch (URISyntaxException ex) {
+                final String errorMessage = "Bad Request URL after update to original host \"" + originalHost + "\". Not valid syntax. Error: " + ex.getMessage();
+                LogWriter.logError(errorMessage);
+                throw new SigningException(errorMessage, ex);
+            }
         }
 
         // Need to remove these headers for the SDK
@@ -233,7 +279,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
                 }
             }
         }
-        
+
         //Check if the credentials have a session token
         if (credentials.getSessionToken().isPresent()) {
             boolean foundHeader = false;
@@ -246,7 +292,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
                     LogWriter.logDebug("Replaced " + header + " in request with profile's session token.");
                 }
             }
-            if(!foundHeader){
+            if (!foundHeader) {
                 finalHeaders.add("X-Amz-Security-Token: " + credentials.getSessionToken().get());
                 LogWriter.logDebug("Added X-Amz-Security-Token to request with profile's session token.");
             }
@@ -259,8 +305,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
                 }
             }
         }
-        
-        
+
         LogWriter.logDebug("Final Headers: " + finalHeaders);
 
         //Handle the first request line
