@@ -102,7 +102,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
         }
         LogWriter.logDebug("signedHeaderMap: " + signedHeaderMap);
 
-        // build request object for signing
+        //Build request object for signing
         URI uri;
         try {
             uri = request.getUrl().toURI();
@@ -134,7 +134,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
             }
         }
 
-        //Error if we can't find the original host header, use what's in the URI
+        //If we can't find the host header, use what's in the URI
         if (originalHost == null || originalHost.isEmpty()) {
             originalHost = uri.getHost();
             originalHostPort = uri.getPort();
