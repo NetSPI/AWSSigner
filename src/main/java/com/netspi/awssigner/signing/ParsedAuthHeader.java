@@ -15,7 +15,7 @@ public class ParsedAuthHeader {
     private static final String AUTH_HEADER_PATTERN_SERVICE_GROUP = "service";
     private static final String AUTH_HEADER_PATTERN_SIGNED_HEADERS_GROUP = "signedheaders";
     private static final String AUTH_HEADER_PATTERN_SIGNATURE_GROUP = "signature";
-    private static final Pattern AUTH_HEADER_PATTERN = Pattern.compile("Authorization:\\s*(?<" + AUTH_HEADER_PATTERN_ALGORITHM_GROUP + ">AWS4-(?:HMAC|ECDSA-P256)-SHA256)\\s*Credential=(?<" + AUTH_HEADER_PATTERN_ACCESS_KEY_GROUP + ">[\\w-]{1,128})\\/(?<" + AUTH_HEADER_PATTERN_DATE_GROUP + ">\\d{8})\\/(?:(?<" + AUTH_HEADER_PATTERN_REGION_GROUP + ">[\\w-]{0,64})\\/)?(?<" + AUTH_HEADER_PATTERN_SERVICE_GROUP + ">\\S{0,128})\\/aws4_request,?\\s+SignedHeaders=(?<" + AUTH_HEADER_PATTERN_SIGNED_HEADERS_GROUP + ">\\S+),?\\s+Signature=(?<" + AUTH_HEADER_PATTERN_SIGNATURE_GROUP + ">[a-fA-F\\d]{1,256})", Pattern.CASE_INSENSITIVE);
+    private static final Pattern AUTH_HEADER_PATTERN = Pattern.compile("Authorization:\\s*(?<" + AUTH_HEADER_PATTERN_ALGORITHM_GROUP + ">AWS4-(?:HMAC|ECDSA-P256)-SHA256)\\s*Credential=(?<" + AUTH_HEADER_PATTERN_ACCESS_KEY_GROUP + ">[\\w-]{1,128})\\/(?<" + AUTH_HEADER_PATTERN_DATE_GROUP + ">\\d{8})\\/(?:(?<" + AUTH_HEADER_PATTERN_REGION_GROUP + ">[\\w-]{0,64})\\/)?(?<" + AUTH_HEADER_PATTERN_SERVICE_GROUP + ">\\S{0,128})\\/aws4_request(,|\\s)+SignedHeaders=(?<" + AUTH_HEADER_PATTERN_SIGNED_HEADERS_GROUP + ">\\S+)(,|\\s)+Signature=(?<" + AUTH_HEADER_PATTERN_SIGNATURE_GROUP + ">[a-fA-F\\d]{1,256})", Pattern.CASE_INSENSITIVE);
 
     private final SigningAlgorithm algorithm;
     private final String accessKey;
