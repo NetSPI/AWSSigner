@@ -15,16 +15,17 @@ import java.util.Base64;
 import java.util.UUID;
 
 public final class AWSSignerUtils {
-    private static String PREFERENCES_URL_STRING = "aws-signer-project-preferences";
+    private static String CONFIG_URL_STRING = "aws-signer-project-config";
 
     private static IBurpExtenderCallbacks callbacks;
     private static IHttpService httpService;
 
     public static void setBurpExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
         AWSSignerUtils.callbacks = callbacks;
-        httpService = callbacks.getHelpers().buildHttpService(PREFERENCES_URL_STRING, 65535, true);
+        httpService = callbacks.getHelpers().buildHttpService(CONFIG_URL_STRING, 65535, true);
     }
 
+    // Fetches a base64 encoded, serialized object as a burp setting on a per-project basis
     public static Object getStoredObjectForCurrentProject(String key) {
         String projectUUIDString = getOrGenerateProjectUUID();
         LogWriter.logDebug("Project UUID string is: " + projectUUIDString);
@@ -46,6 +47,7 @@ public final class AWSSignerUtils {
         return result;
     }
 
+    // Stores a base64 encoded, serialized object as a burp setting on a per-project basis
     public static void storeObjectForCurrentProject(String key, Object value) {
         String projectUUIDString = getOrGenerateProjectUUID();
         LogWriter.logDebug("Project UUID string is: " + projectUUIDString);
@@ -67,18 +69,21 @@ public final class AWSSignerUtils {
     }
 
     private static String getOrGenerateProjectUUID() {
-        IHttpRequestResponse[] sitemap = callbacks.getSiteMap(httpService.getProtocol() +"://" + httpService.getHost() + ":" + httpService.getPort() + "/" + PREFERENCES_URL_STRING);
+        IHttpRequestResponse[] sitemap = callbacks.getSiteMap(httpService.getProtocol() +"://" + httpService.getHost() + ":" + httpService.getPort() + "/" + CONFIG_URL_STRING);
 
         String uuidString = null;
 
+        // UUID for this project hasnt been generated yet
         if (sitemap.length == 0) {
             uuidString = UUID.randomUUID().toString();
             HttpResponseWrapper uuid = new HttpResponseWrapper();
 
             try {
-                byte[] buffer = callbacks.getHelpers().buildHttpRequest(new URL(httpService.getProtocol(), httpService.getHost(), httpService.getPort(), "/" + PREFERENCES_URL_STRING));
 
+                // Generate a fabricated request in the sitemap to store the UUID in the project for future retreival
+                // This is needed as the legacy API does not support distinguishing what project we are in natively
 
+                byte[] buffer = callbacks.getHelpers().buildHttpRequest(new URL(httpService.getProtocol(), httpService.getHost(), httpService.getPort(), "/" + CONFIG_URL_STRING));
                 uuid.setRequest(buffer);
                 uuid.setResponse(uuidString.getBytes());
                 uuid.setHttpService(httpService);
@@ -86,7 +91,6 @@ public final class AWSSignerUtils {
                 uuid.setRequest(buffer);
                 callbacks.addToSiteMap(uuid);
             } catch ( Exception e ){
-                
                 e.printStackTrace();
             }
         } else {
@@ -98,6 +102,7 @@ public final class AWSSignerUtils {
         return uuidString;
     }
 
+    // Used as a wrapper "HttpRequestResponse" object we can store in the sitemap, but we use it to just store arbitrary data in the response buffer.
     static class HttpResponseWrapper implements IHttpRequestResponse {
 
         private byte[] requestData;

@@ -17,11 +17,11 @@ public class AWSSignerConfiguration implements Serializable {
     public volatile int signForTools = IBurpExtenderCallbacks.TOOL_SUITE;
     public volatile boolean shouldPersist = true;
 
-    public static final String PREFERENCE_KEY_SUFFIX = "aws-signer-configuration";
+    public static final String STORED_CONFIG_OBJECT_KEY = "aws-signer-configuration";
 
     public synchronized void persist() {
         if (shouldPersist) {
-            AWSSignerUtils.storeObjectForCurrentProject(PREFERENCE_KEY_SUFFIX, this);
+            AWSSignerUtils.storeObjectForCurrentProject(STORED_CONFIG_OBJECT_KEY, this);
         }
     }
 
@@ -29,7 +29,7 @@ public class AWSSignerConfiguration implements Serializable {
 
         AWSSignerConfiguration config = new AWSSignerConfiguration();
 
-        Object o = AWSSignerUtils.getStoredObjectForCurrentProject(PREFERENCE_KEY_SUFFIX);
+        Object o = AWSSignerUtils.getStoredObjectForCurrentProject(STORED_CONFIG_OBJECT_KEY);
 
         if ( o != null && o instanceof AWSSignerConfiguration) {
             config = (AWSSignerConfiguration) o;
