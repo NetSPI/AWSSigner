@@ -66,8 +66,42 @@ public class AWSSignerController {
 
         initListeners();
 
-        //Add the initial profile
-        addProfile(new StaticCredentialsProfile(INIT_PROFILE_NAME));
+        //Add the initial profile if no profiles exist already
+
+        if (this.model.profiles.isEmpty()) {
+            addProfile(new StaticCredentialsProfile(INIT_PROFILE_NAME));
+        } else {
+            this.view.profileList.setSelectedIndex(0);
+        }
+
+        syncViewWithModel();
+    }
+
+    private void syncViewWithModel(){
+
+        //Setup profile list
+        DefaultListModel listModel = resetProfileList();
+        view.profileList.setSelectedIndex(0);
+
+        //Reset "Always Sign With" combo box
+        resetAlwaysSignWithProfileComboBox();
+
+        initializeProfileConfigurationTab(model.profiles.get(0));
+
+        // Hack to preserve the state of the flag bits, since the handlers for setSelected flip the bits currently.
+        
+        int tmp = model.signForTools;
+        this.view.persistConfigurationCheckbox.setSelected(model.shouldPersist);
+        this.view.signingEnabledCheckbox.setSelected(model.isEnabled);
+        this.view.signForAllCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_SUITE) != 0);
+        this.view.signForProxyCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_PROXY) != 0);
+        this.view.signForIntruderCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_INTRUDER) != 0);
+        this.view.signForExtensionsCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_EXTENDER) != 0);
+        this.view.signForRepeaterCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_REPEATER) != 0);
+        this.view.signForTargetCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_TARGET) != 0);
+        this.view.signForScannerCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_SCANNER) != 0);
+        this.view.signForSequencerCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_SEQUENCER) != 0);
+        model.signForTools = tmp;
     }
 
     private void initListeners() {
@@ -76,6 +110,13 @@ public class AWSSignerController {
             logDebug("Global Signing Enabled Checkbox State Change.");
             model.isEnabled = (e.getStateChange() == ItemEvent.SELECTED);
             logInfo("Signing Enabled: " + model.isEnabled);
+        });
+
+        //Configuration persistence checkbox
+        view.persistConfigurationCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("Persist Configuration Checkbox State Change.");
+            model.shouldPersist = (e.getStateChange() == ItemEvent.SELECTED);
+            logInfo("Persist Configuration Enabled: " + model.shouldPersist);
         });
 
         //"Always Sign With" profile selection combox box

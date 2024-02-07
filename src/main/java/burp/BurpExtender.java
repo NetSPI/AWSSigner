@@ -8,6 +8,7 @@ import com.netspi.awssigner.model.Profile;
 import com.netspi.awssigner.signing.DelegatingAwsRequestSigner;
 import com.netspi.awssigner.signing.ParsedAuthHeader;
 import com.netspi.awssigner.signing.SigningException;
+import com.netspi.awssigner.utils.AWSSignerUtils;
 import com.netspi.awssigner.view.BurpUIComponentCustomizer;
 import com.netspi.awssigner.view.BurpTabPanel;
 import java.awt.Component;
@@ -52,7 +53,13 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IContex
 
         //Save callbacks and helpers for later reference
         this.callbacks = callbacks;
+        AWSSignerUtils.setBurpExtenderCallbacks(callbacks);
         helpers = callbacks.getHelpers();
+
+        // Extension unload/shutdown callback
+        this.callbacks.registerExtensionStateListener(()-> {
+            this.model.persist();
+        });
 
         //Setup styling
         BurpUIComponentCustomizer.setBurpStyler((Component component) -> {
@@ -66,7 +73,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IContex
         //Create the view
         view = new BurpTabPanel();
         //Create the model
-        model = new AWSSignerConfiguration();
+        model = AWSSignerConfiguration.getOrCreateProjectConfiguration();
         //Create controller to keep them in sync
         controller = new AWSSignerController(view, model);
 
