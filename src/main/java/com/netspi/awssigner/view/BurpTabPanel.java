@@ -1,8 +1,7 @@
 package com.netspi.awssigner.view;
 
 import com.netspi.awssigner.log.LogWriter;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+
 import java.util.regex.Pattern;
 import javax.swing.border.EtchedBorder;
 
@@ -38,6 +37,17 @@ public class BurpTabPanel extends javax.swing.JPanel {
         logLevelLabel = new javax.swing.JLabel();
         logLevelComboBox = new javax.swing.JComboBox<>();
         globalSettingsSeparator = new javax.swing.JSeparator();
+        signForPanel = new javax.swing.JPanel();
+        signForLabel = new javax.swing.JLabel();
+        signForAllCheckbox = new javax.swing.JCheckBox();
+        signForRepeaterCheckbox = new javax.swing.JCheckBox();
+        signForProxyCheckbox = new javax.swing.JCheckBox();
+        signForIntruderCheckbox = new javax.swing.JCheckBox();
+        signForExtensionsCheckbox = new javax.swing.JCheckBox();
+        signForScannerCheckbox = new javax.swing.JCheckBox();
+        signForTargetCheckbox = new javax.swing.JCheckBox();
+        signForSequencerCheckbox = new javax.swing.JCheckBox();
+        persistConfigurationCheckbox = new javax.swing.JCheckBox();
         profileManagementLabel = new javax.swing.JLabel();
         profileManagementDescriptionLabel = new javax.swing.JLabel();
         addProfileButton = new javax.swing.JButton();
@@ -124,7 +134,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
         signingEnabledCheckbox.setFont(signingEnabledCheckbox.getFont());
         signingEnabledCheckbox.setSelected(true);
         signingEnabledCheckbox.setText("Signing Enabled");
-        signingEnabledCheckbox.setToolTipText("Enable/Disable request signing globally");
+        signingEnabledCheckbox.setToolTipText("Enable/Disable request signing globally.");
         signingEnabledCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
 
         alwaysSignWithProfileLabel.setFont(alwaysSignWithProfileLabel.getFont());
@@ -144,46 +154,150 @@ public class BurpTabPanel extends javax.swing.JPanel {
         logLevelComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Error", "Info", "Debug" }));
         logLevelComboBox.setToolTipText("Set the extension's logging verbosity");
 
+        signForLabel.setText("Sign For:");
+
+        signForAllCheckbox.setFont(signForAllCheckbox.getFont());
+        signForAllCheckbox.setSelected(true);
+        signForAllCheckbox.setText("All");
+        signForAllCheckbox.setToolTipText("Enable/Disable signing for all requests.");
+        signForAllCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        signForRepeaterCheckbox.setFont(signForRepeaterCheckbox.getFont());
+        signForRepeaterCheckbox.setText("Repeater");
+        signForRepeaterCheckbox.setToolTipText("Enable/Disable signing for Repeater requests.");
+        signForRepeaterCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        signForProxyCheckbox.setFont(signForProxyCheckbox.getFont());
+        signForProxyCheckbox.setText("Proxy");
+        signForProxyCheckbox.setToolTipText("Enable/Disable signing for Proxy requests.");
+        signForProxyCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        signForIntruderCheckbox.setFont(signForIntruderCheckbox.getFont());
+        signForIntruderCheckbox.setText("Intruder ");
+        signForIntruderCheckbox.setToolTipText("Enable/Disable signing for Intruder requests.");
+        signForIntruderCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        signForExtensionsCheckbox.setFont(signForExtensionsCheckbox.getFont());
+        signForExtensionsCheckbox.setText("Extensions");
+        signForExtensionsCheckbox.setToolTipText("Enable/Disable signing for Extension requests.");
+        signForExtensionsCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        signForScannerCheckbox.setFont(signForScannerCheckbox.getFont());
+        signForScannerCheckbox.setText("Scanner");
+        signForScannerCheckbox.setToolTipText("Enable/Disable signing for Scanner requests.");
+        signForScannerCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        signForTargetCheckbox.setFont(signForTargetCheckbox.getFont());
+        signForTargetCheckbox.setText("Target");
+        signForTargetCheckbox.setToolTipText("Enable/Disable signing for Target requests.");
+        signForTargetCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        signForSequencerCheckbox.setFont(signForSequencerCheckbox.getFont());
+        signForSequencerCheckbox.setText("Sequencer");
+        signForSequencerCheckbox.setToolTipText("Enable/Disable signing for Sequencer requests.");
+        signForSequencerCheckbox.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+
+        javax.swing.GroupLayout signForPanelLayout = new javax.swing.GroupLayout(signForPanel);
+        signForPanel.setLayout(signForPanelLayout);
+        signForPanelLayout.setHorizontalGroup(
+            signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(signForPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(signForLabel)
+                    .addGroup(signForPanelLayout.createSequentialGroup()
+                        .addGroup(signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(signForAllCheckbox)
+                            .addComponent(signForProxyCheckbox))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(signForPanelLayout.createSequentialGroup()
+                                .addComponent(signForRepeaterCheckbox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(signForExtensionsCheckbox))
+                            .addGroup(signForPanelLayout.createSequentialGroup()
+                                .addComponent(signForIntruderCheckbox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(signForTargetCheckbox)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(signForSequencerCheckbox)
+                            .addComponent(signForScannerCheckbox))))
+                .addContainerGap(28, Short.MAX_VALUE))
+        );
+        signForPanelLayout.setVerticalGroup(
+            signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(signForPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(signForLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(signForAllCheckbox)
+                    .addComponent(signForRepeaterCheckbox)
+                    .addComponent(signForExtensionsCheckbox)
+                    .addComponent(signForScannerCheckbox))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(signForPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(signForProxyCheckbox)
+                    .addComponent(signForIntruderCheckbox)
+                    .addComponent(signForTargetCheckbox)
+                    .addComponent(signForSequencerCheckbox)))
+        );
+
+        persistConfigurationCheckbox.setFont(persistConfigurationCheckbox.getFont());
+        persistConfigurationCheckbox.setSelected(true);
+        persistConfigurationCheckbox.setText("Persist Configuration");
+        persistConfigurationCheckbox.setToolTipText("Enable/Disable configuration persistence.");
+        persistConfigurationCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+
         javax.swing.GroupLayout globalSettingsPanelLayout = new javax.swing.GroupLayout(globalSettingsPanel);
         globalSettingsPanel.setLayout(globalSettingsPanelLayout);
         globalSettingsPanelLayout.setHorizontalGroup(
             globalSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(globalSettingsSeparator)
             .addGroup(globalSettingsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(globalSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(globalSettingsLabel)
                     .addGroup(globalSettingsPanelLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(globalSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(globalSettingsDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(globalSettingsPanelLayout.createSequentialGroup()
+                                .addComponent(persistConfigurationCheckbox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(signingEnabledCheckbox)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(alwaysSignWithProfileLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(alwaysSignWithProfileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 349, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(logLevelLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(logLevelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addGap(248, 391, Short.MAX_VALUE))
-            .addComponent(globalSettingsSeparator)
+                                .addComponent(logLevelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(globalSettingsLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(signForPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(155, Short.MAX_VALUE))
         );
         globalSettingsPanelLayout.setVerticalGroup(
             globalSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(globalSettingsPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(globalSettingsLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(globalSettingsDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(globalSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(signingEnabledCheckbox)
-                    .addComponent(alwaysSignWithProfileLabel)
-                    .addComponent(alwaysSignWithProfileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(logLevelLabel)
-                    .addComponent(logLevelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(globalSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(globalSettingsPanelLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(globalSettingsLabel)
+                        .addGap(12, 12, 12)
+                        .addComponent(globalSettingsDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(globalSettingsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(signingEnabledCheckbox)
+                            .addComponent(alwaysSignWithProfileLabel)
+                            .addComponent(alwaysSignWithProfileComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(logLevelLabel)
+                            .addComponent(logLevelComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(persistConfigurationCheckbox)))
+                    .addComponent(signForPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(103, 103, 103)
                 .addComponent(globalSettingsSeparator, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(8, 8, 8))
         );
@@ -435,9 +549,9 @@ public class BurpTabPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(assumeRoleSessionPolicyConfigurationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(assumeRoleSessionPolicyDescriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                .addComponent(assumeRoleSessionPolicyDescriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(assumeRoleSessionPolicyScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                .addComponent(assumeRoleSessionPolicyScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 360, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(assumeRoleSessionPolicyPrettifyButton))
         );
@@ -573,7 +687,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
                         .addGroup(commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(commandExtractedSectionLabel)
                             .addGroup(commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(commandConfigurationDescriptionLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 684, Short.MAX_VALUE)
+                                .addComponent(commandConfigurationDescriptionLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, commandPanelLayout.createSequentialGroup()
                                     .addGroup(commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(commandDurationLabel)
@@ -585,7 +699,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
                             .addGroup(commandPanelLayout.createSequentialGroup()
                                 .addGap(10, 10, 10)
                                 .addGroup(commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(commandExtractedSectionDescriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 672, Short.MAX_VALUE)
+                                    .addComponent(commandExtractedSectionDescriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 683, Short.MAX_VALUE)
                                     .addGroup(commandPanelLayout.createSequentialGroup()
                                         .addGroup(commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(commandExtractedSessionTokenLabel)
@@ -604,7 +718,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(commandConfigurationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(commandConfigurationDescriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
+                .addComponent(commandConfigurationDescriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 85, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(commandCommandLabel)
@@ -827,6 +941,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
     public javax.swing.JButton importProfilesButton;
     public javax.swing.JComboBox<String> logLevelComboBox;
     private javax.swing.JLabel logLevelLabel;
+    public javax.swing.JCheckBox persistConfigurationCheckbox;
     private javax.swing.JLabel profileConfigurationLabel;
     public javax.swing.JPanel profileConfigurationPanel;
     public javax.swing.JScrollPane profileConfigurationScrollPane;
@@ -846,6 +961,16 @@ public class BurpTabPanel extends javax.swing.JPanel {
     private javax.swing.JLabel profileStatusLabel;
     public javax.swing.JLabel profileStatusTextLabel;
     public javax.swing.JPanel rightSideParentPanel;
+    public javax.swing.JCheckBox signForAllCheckbox;
+    public javax.swing.JCheckBox signForExtensionsCheckbox;
+    public javax.swing.JCheckBox signForIntruderCheckbox;
+    private javax.swing.JLabel signForLabel;
+    private javax.swing.JPanel signForPanel;
+    public javax.swing.JCheckBox signForProxyCheckbox;
+    public javax.swing.JCheckBox signForRepeaterCheckbox;
+    public javax.swing.JCheckBox signForScannerCheckbox;
+    public javax.swing.JCheckBox signForSequencerCheckbox;
+    public javax.swing.JCheckBox signForTargetCheckbox;
     public javax.swing.JCheckBox signingEnabledCheckbox;
     private javax.swing.JLabel staticAccessKeyLabel;
     public javax.swing.JTextField staticAccessKeyTextField;

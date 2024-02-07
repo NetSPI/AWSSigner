@@ -95,49 +95,59 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Component id="globalSettingsSeparator" alignment="0" max="32767" attributes="0"/>
+              <Group type="102" attributes="0">
                   <EmptySpace min="-2" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="globalSettingsLabel" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="globalSettingsDescriptionLabel" min="-2" max="-2" attributes="0"/>
+                              <Component id="globalSettingsDescriptionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="0" attributes="0">
+                                  <Component id="persistConfigurationCheckbox" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="signingEnabledCheckbox" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
                                   <Component id="alwaysSignWithProfileLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="alwaysSignWithProfileComboBox" min="-2" pref="349" max="-2" attributes="0"/>
-                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="logLevelLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="logLevelComboBox" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
+                      <Component id="globalSettingsLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="248" pref="391" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="signForPanel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="155" max="32767" attributes="0"/>
               </Group>
-              <Component id="globalSettingsSeparator" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Component id="globalSettingsLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="globalSettingsDescriptionLabel" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="signingEnabledCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="alwaysSignWithProfileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="alwaysSignWithProfileComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="logLevelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="logLevelComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="globalSettingsLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+                          <Component id="globalSettingsDescriptionLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="signingEnabledCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="alwaysSignWithProfileLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="alwaysSignWithProfileComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="logLevelLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="logLevelComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="persistConfigurationCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <Component id="signForPanel" alignment="1" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="103" pref="103" max="-2" attributes="0"/>
                   <Component id="globalSettingsSeparator" min="-2" max="-2" attributes="0"/>
                   <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
               </Group>
@@ -165,7 +175,8 @@
                 <Font component="globalSettingsDescriptionLabel" property="font" relativeSize="true" size="0"/>
               </FontInfo>
             </Property>
-            <Property name="text" type="java.lang.String" value="&lt;html&gt;Change extension behavior. Set &lt;i&gt;Always Sign With&lt;/i&gt; to force signing of all requests with the specified profile credentials."/>
+            <Property name="text" type="java.lang.String" value="&lt;html&gt;Change extension behavior. Set &lt;i&gt;Always Sign With&lt;/i&gt; to force signing
+ of all requests with the specified profile credentials."/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="globalSettingsDescriptionLabel.putClientProperty(&quot;html.disable&quot;, null);"/>
@@ -180,7 +191,7 @@
             </Property>
             <Property name="selected" type="boolean" value="true"/>
             <Property name="text" type="java.lang.String" value="Signing Enabled"/>
-            <Property name="toolTipText" type="java.lang.String" value="Enable/Disable request signing globally"/>
+            <Property name="toolTipText" type="java.lang.String" value="Enable/Disable request signing globally."/>
             <Property name="horizontalTextPosition" type="int" value="10"/>
           </Properties>
           <AuxValues>
@@ -254,6 +265,212 @@
           </AuxValues>
         </Component>
         <Component class="javax.swing.JSeparator" name="globalSettingsSeparator">
+        </Component>
+        <Container class="javax.swing.JPanel" name="signForPanel">
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="signForLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="signForAllCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Component id="signForProxyCheckbox" alignment="0" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="signForRepeaterCheckbox" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="signForExtensionsCheckbox" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="signForIntruderCheckbox" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="signForTargetCheckbox" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="signForSequencerCheckbox" min="-2" max="-2" attributes="0"/>
+                                  <Component id="signForScannerCheckbox" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                      <EmptySpace pref="28" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="signForLabel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="signForAllCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="signForRepeaterCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="signForExtensionsCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="signForScannerCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="signForProxyCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="signForIntruderCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="signForTargetCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="signForSequencerCheckbox" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="signForLabel">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Sign For:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForAllCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForAllCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="selected" type="boolean" value="true"/>
+                <Property name="text" type="java.lang.String" value="All"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for all requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForRepeaterCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForRepeaterCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Repeater"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for Repeater requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForProxyCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForProxyCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Proxy"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for Proxy requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForIntruderCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForIntruderCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Intruder "/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for Intruder requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForExtensionsCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForExtensionsCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Extensions"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for Extension requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForScannerCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForScannerCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Scanner"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for Scanner requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForTargetCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForTargetCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Target"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for Target requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="signForSequencerCheckbox">
+              <Properties>
+                <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+                  <FontInfo relative="true">
+                    <Font component="signForSequencerCheckbox" property="font" relativeSize="true" size="0"/>
+                  </FontInfo>
+                </Property>
+                <Property name="text" type="java.lang.String" value="Sequencer"/>
+                <Property name="toolTipText" type="java.lang.String" value="Enable/Disable signing for Sequencer requests."/>
+                <Property name="horizontalAlignment" type="int" value="11"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+              </AuxValues>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Component class="javax.swing.JCheckBox" name="persistConfigurationCheckbox">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
+              <FontInfo relative="true">
+                <Font component="persistConfigurationCheckbox" property="font" relativeSize="true" size="0"/>
+              </FontInfo>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Persist Configuration"/>
+            <Property name="toolTipText" type="java.lang.String" value="Enable/Disable configuration persistence."/>
+            <Property name="horizontalTextPosition" type="int" value="10"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+          </AuxValues>
         </Component>
       </SubComponents>
     </Container>
@@ -1116,9 +1333,9 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="assumeRoleSessionPolicyConfigurationLabel" min="-2" pref="30" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="assumeRoleSessionPolicyDescriptionLabel" pref="47" max="32767" attributes="0"/>
+                                      <Component id="assumeRoleSessionPolicyDescriptionLabel" pref="56" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="assumeRoleSessionPolicyScrollPane" pref="357" max="32767" attributes="0"/>
+                                      <Component id="assumeRoleSessionPolicyScrollPane" pref="360" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="assumeRoleSessionPolicyPrettifyButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -1214,7 +1431,7 @@
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="commandExtractedSectionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                               <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
-                                                  <Component id="commandConfigurationDescriptionLabel" alignment="0" pref="684" max="32767" attributes="0"/>
+                                                  <Component id="commandConfigurationDescriptionLabel" alignment="0" pref="692" max="32767" attributes="0"/>
                                                   <Group type="102" alignment="0" attributes="0">
                                                       <Group type="103" groupAlignment="0" attributes="0">
                                                           <Component id="commandDurationLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1230,7 +1447,7 @@
                                               <Group type="102" alignment="0" attributes="0">
                                                   <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
                                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                                      <Component id="commandExtractedSectionDescriptionLabel" pref="672" max="32767" attributes="0"/>
+                                                      <Component id="commandExtractedSectionDescriptionLabel" pref="683" max="32767" attributes="0"/>
                                                       <Group type="102" attributes="0">
                                                           <Group type="103" groupAlignment="0" attributes="0">
                                                               <Component id="commandExtractedSessionTokenLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1259,7 +1476,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="commandConfigurationLabel" min="-2" pref="30" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="commandConfigurationDescriptionLabel" pref="71" max="32767" attributes="0"/>
+                                  <Component id="commandConfigurationDescriptionLabel" pref="85" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="commandCommandLabel" alignment="3" min="-2" max="-2" attributes="0"/>
