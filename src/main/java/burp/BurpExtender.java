@@ -11,7 +11,10 @@ import com.netspi.awssigner.signing.SigningException;
 import com.netspi.awssigner.view.BurpUIComponentCustomizer;
 import com.netspi.awssigner.view.BurpTabPanel;
 import java.awt.Component;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.swing.JMenuItem;
 import javax.swing.SwingUtilities;
@@ -19,7 +22,23 @@ import javax.swing.SwingUtilities;
 //This is the Burp primary class. It needs to live in this package and have this name
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IContextMenuFactory {
 
+    static {
+        final Map<Integer, String> tempMap = new HashMap<Integer, String>();
+
+        tempMap.put(IBurpExtenderCallbacks.TOOL_SUITE, "All");
+        tempMap.put(IBurpExtenderCallbacks.TOOL_EXTENDER, "Extensions");
+        tempMap.put(IBurpExtenderCallbacks.TOOL_INTRUDER, "Intruder");
+        tempMap.put(IBurpExtenderCallbacks.TOOL_PROXY, "Proxy");
+        tempMap.put(IBurpExtenderCallbacks.TOOL_REPEATER, "Repeater");
+        tempMap.put(IBurpExtenderCallbacks.TOOL_SCANNER, "Scanner");
+        tempMap.put(IBurpExtenderCallbacks.TOOL_SEQUENCER, "Sequencer");
+        tempMap.put(IBurpExtenderCallbacks.TOOL_TARGET, "Target");
+
+        TOOL_FLAG_TRANSLATION_MAP = Collections.unmodifiableMap(tempMap);
+    }
     public static final String EXTENSION_NAME = "AWS Signer";
+
+    private static final Map<Integer, String> TOOL_FLAG_TRANSLATION_MAP;
 
     private BurpTabPanel view;
     private AWSSignerConfiguration model;
@@ -96,6 +115,12 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IContex
         //Is the signer enabled?
         if (!model.isEnabled) {
             LogWriter.logDebug("Signing not enabled. Ignoring Message.");
+            return;
+        }
+
+        // Is the request from a tool we want to sign?
+        if ((model.signForTools & toolFlag) == 0 && (model.signForTools & IBurpExtenderCallbacks.TOOL_SUITE) == 0) {
+            LogWriter.logDebug("Signing for requests from " + TOOL_FLAG_TRANSLATION_MAP.get(toolFlag) + " is not enabled. Ignoring Message.");
             return;
         }
 

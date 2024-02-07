@@ -1,6 +1,7 @@
 package com.netspi.awssigner.controller;
 
 import burp.BurpExtender;
+import burp.IBurpExtenderCallbacks;
 import burp.IContextMenuInvocation;
 import com.netspi.awssigner.credentials.SigningCredentials;
 import com.google.gson.GsonBuilder;
@@ -95,6 +96,62 @@ public class AWSSignerController {
                 LogWriter.setLevel(newLoggingLevel);
             }
         }));
+
+        //Sign for all check box
+        view.signForAllCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_SUITE;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+        
+        //Sign for repeater check box
+        view.signForRepeaterCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_REPEATER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for proxy check box
+        view.signForProxyCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_PROXY;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for intruder check box
+        view.signForIntruderCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_INTRUDER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign target check box
+        view.signForTargetCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_TARGET;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for extensions check box
+        view.signForExtensionsCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_EXTENDER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for sequencer check box
+        view.signForSequencerCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_SEQUENCER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for scanner check box
+        view.signForScannerCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_SCANNER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
 
         //Add button
         view.addProfileButton.addActionListener(((ActionEvent e) -> {

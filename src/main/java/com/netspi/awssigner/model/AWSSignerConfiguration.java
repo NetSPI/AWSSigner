@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import burp.IBurpExtenderCallbacks;
+
 public class AWSSignerConfiguration {
     public volatile boolean isEnabled =  true;
     public volatile List<Profile> profiles = new ArrayList<>();
     public volatile Profile alwaysSignWithProfile;
+    public volatile int signForTools = IBurpExtenderCallbacks.TOOL_SUITE;
 
     public List<String> getProfileNames() {
         return profiles.stream().map(Profile::getName).collect(Collectors.toList());
