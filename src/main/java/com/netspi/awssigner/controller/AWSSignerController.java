@@ -34,7 +34,6 @@ import com.netspi.awssigner.view.ImportDialog;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -325,6 +324,31 @@ public class AWSSignerController {
             }
 
             Profile profile = currentProfileOptional.get();
+
+            // Bug fix to use the updated config if the input text field still has focus
+            if (profile instanceof StaticCredentialsProfile) {
+                if (view.staticAccessKeyTextField.hasFocus()) {
+                    ((StaticCredentialsProfile) profile).setAccessKey(view.staticAccessKeyTextField.getText());
+                }
+                if (view.staticSecretKeyTextField.hasFocus()) {
+                    ((StaticCredentialsProfile) profile).setSecretKey(view.staticSecretKeyTextField.getText());
+                }
+                if (view.staticSessionTokenTextField.hasFocus()) {
+                    ((StaticCredentialsProfile) profile).setSessionToken(view.staticSessionTokenTextField.getText());
+                }
+            } else if (profile instanceof CommandProfile) {
+                if (view.commandCommandTextField.hasFocus()) {
+                    ((CommandProfile) profile).setCommand(view.commandCommandTextField.getText());
+                }
+                if (view.commandDurationTextField.hasFocus()) {
+                    ((CommandProfile) profile).setDurationSecondsFromText(view.commandDurationTextField.getText());
+                }
+            } else if ( profile instanceof AssumeRoleProfile) {
+                if (view.assumeRoleRoleArnTextField.hasFocus()) {
+                    ((AssumeRoleProfile) profile).setRoleArn(view.assumeRoleRoleArnTextField.getText());
+                }
+            }
+
             //Check if we even have enough information to test this profile
             if (!profile.requiredFieldsAreSet()) {
                 logDebug("Profile " + profile.getName() + " does not have all required fields");
