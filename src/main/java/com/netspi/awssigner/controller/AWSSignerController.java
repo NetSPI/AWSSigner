@@ -44,6 +44,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
+import com.netspi.awssigner.controller.TextComponentFocusListener;
 
 /**
  * The complex class which enforces logic and syncs up the configuration model

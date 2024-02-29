@@ -6,7 +6,13 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
+
+//Author Jake Genia
+// With the help of ChatGPT I added a nested DocumentListener that will update fields as you type
+// This is helpful instead of requiring users to click off the TextArea before updating
 
 class TextComponentFocusListener<T extends Profile> implements FocusListener {
 
@@ -24,43 +30,56 @@ class TextComponentFocusListener<T extends Profile> implements FocusListener {
 
     @Override
     public void focusGained(FocusEvent e) {
-        /*
-         * Save the current profile being updated.
-         * This is important because we can't just use the SELECTED profile when
-         * focus is lost. This fails if focus is lost by selecting a new profile.
-         * THAT other newly selected profile would be updated instead
-         */
         currentProfileOptional = controller.getCurrentSelectedProfile();
+        JTextComponent textComponent = (JTextComponent) e.getComponent();
+        currentValue = textComponent.getText();
+        
+        // Add document listener when focus is gained
+        textComponent.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                textChanged();
+            }
 
-        //Also note the value when focus was gained. This helps us detected if the value actually changed or not when focus is lost
-        currentValue = ((JTextComponent) e.getComponent()).getText();
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                textChanged();
+            }
 
-        logDebug("Profile " + propertyLoggingName + " Text Field focus gained." + " Cause: " + e.getCause() + " ID:" + e.getID() + " Current value: " + ((JTextComponent) e.getComponent()).getText());
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                textChanged();
+            }
+
+            private void textChanged() {
+                String currentText = textComponent.getText();
+                if (!currentValue.equals(currentText)) {
+                    currentValue = currentText;
+                    updateProfile(currentText);
+                }
+            }
+        });
+
+        logDebug("Profile " + propertyLoggingName + " Text Field focus gained." + " Cause: " + e.getCause() + " ID:" + e.getID() + " Current value: " + currentValue);
     }
 
     @Override
     public void focusLost(FocusEvent e) {
         logDebug("Profile " + propertyLoggingName + " Text Field focus lost." + " Cause: " + e.getCause() + " ID:" + e.getID());
         String currentText = ((JTextComponent) e.getComponent()).getText();
-        if (currentValue.equals(currentText)) {
-            logDebug("Current value has not changed. Not firing update with current value: " + currentValue);
-        } else {
-            currentValue = currentText;
-            
-            //The value has changed. Let's check if we have a profile we're intending to update.
-            if (currentProfileOptional.isPresent()) {
-                Profile currentProfile = currentProfileOptional.get();
-                logInfo("Profile " + currentProfile.getName() + " " + propertyLoggingName + " text changed. New Value: " + currentText);
-                if (currentText == null || currentText.isBlank()) {
-                    updateFunction.accept((T) currentProfile, null);
-                } else {
-                    updateFunction.accept((T) currentProfile, currentText);
-                }
-                controller.updateProfileStatus();
-            } else {
-                logDebug("Profile " + propertyLoggingName + " focus lost, but no profile selected. Ignoring.");
-            }
+        if (!currentValue.equals(currentText)) {
+            updateProfile(currentText);
         }
     }
 
+    private void updateProfile(String currentText) {
+        if (currentProfileOptional.isPresent()) {
+            Profile currentProfile = currentProfileOptional.get();
+            logInfo("Profile " + currentProfile.getName() + " " + propertyLoggingName + " text changed. New Value: " + currentText);
+            updateFunction.accept((T) currentProfile, currentText);
+            controller.updateProfileStatus();
+        } else {
+            logDebug("Profile " + propertyLoggingName + " focus lost, but no profile selected. Ignoring.");
+        }
+    }
 }
