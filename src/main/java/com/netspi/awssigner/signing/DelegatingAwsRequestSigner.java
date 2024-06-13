@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.signer.Aws4Signer;
+import software.amazon.awssdk.auth.signer.Aws4UnsignedPayloadSigner;
 import software.amazon.awssdk.auth.signer.AwsS3V4Signer;
 import software.amazon.awssdk.auth.signer.AwsSignerExecutionAttribute;
 import software.amazon.awssdk.auth.signer.S3SignerExecutionAttribute;
@@ -102,6 +103,14 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
         }
         LogWriter.logDebug("signedHeaderMap: " + signedHeaderMap);
 
+        //Check header for UNSIGNED-PAYLOAD, indicating auth type v4-unsigned-body is used. There may be other possible indicators.
+        boolean unsignedBodyType = false;
+        for(List<String> value: signedHeaderMap.values()){
+            if (value.contains("UNSIGNED-PAYLOAD")){
+                    unsignedBodyType = true;
+            }
+        }
+        
         //Build request object for signing
         URI uri;
         try {
@@ -228,6 +237,9 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
                 if (authHeader.getAlgorithm() == SigningAlgorithm.SIGV4A) {
                     LogWriter.logDebug("Handling non-S3 SigV4a signature.");
                     signer = AwsCrtV4aSigner.create();
+                } else if (unsignedBodyType) {
+                    LogWriter.logDebug("Handling unsigned payload SigV4 signature.");
+                    signer = Aws4UnsignedPayloadSigner.create();
                 } else {
                     LogWriter.logDebug("Handling non-S3 SigV4 signature.");
                     signer = Aws4Signer.create();
