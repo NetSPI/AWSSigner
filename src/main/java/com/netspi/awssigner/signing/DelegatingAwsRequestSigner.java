@@ -96,7 +96,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
             }).map(header -> {
                 //Only keep the header's value.
                 //We know from the filter that there is a colon character, so this is safe.
-                return header.split(":", 2)[1];
+                return header.split(":", 2)[1].trim();
             }).collect(Collectors.toList());
             LogWriter.logDebug("For header \"" + signedHeader + "\" found the following values: " + headerValues);
             signedHeaderMap.put(signedHeader, headerValues);
@@ -194,7 +194,7 @@ public class DelegatingAwsRequestSigner implements AwsRequestSigner {
                     .map(header -> {
                         //Only keep the header's value.
                         //We know from the filter that there is a colon character, so this is safe.
-                        return header.split(":", 2)[1];
+                        return header.split(":", 2)[1].trim();
                     }).findFirst();
 
             //We want to find the right region for our request
