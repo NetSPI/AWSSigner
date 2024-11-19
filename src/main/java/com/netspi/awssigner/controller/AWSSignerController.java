@@ -44,6 +44,14 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.PatternSyntaxException;
+import javax.swing.text.Highlighter;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.BadLocationException;
+import java.awt.Color;
+
 
 /**
  * The complex class which enforces logic and syncs up the configuration model
@@ -382,6 +390,76 @@ public class AWSSignerController {
             }
 
         }));
+
+        view.assumeRoleSessionPolicyFindButton.addActionListener((ActionEvent e) -> {
+            try {
+                String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
+
+                // Ensure the regex pattern is not empty
+                if (regex.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Regex pattern cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String content = view.assumeRoleSessionPolicyTextArea.getText();
+
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(content);
+
+                Highlighter highlighter = view.assumeRoleSessionPolicyTextArea.getHighlighter();
+                highlighter.removeAllHighlights();
+
+                while (matcher.find()) {
+                    int start = matcher.start();
+                    int end = matcher.end();
+
+                    // Skip invalid or empty matches
+                    if (start != end) {
+                        highlighter.addHighlight(start, end, new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW));
+                    }
+                }
+            } catch (PatternSyntaxException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+        });
+
+
+        view.assumeRoleSessionPolicyReplaceButton.addActionListener((ActionEvent e) -> {
+            try {
+                String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
+                String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
+                String content = view.assumeRoleSessionPolicyTextArea.getText();
+
+                if (regex.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Regex pattern cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                view.assumeRoleSessionPolicyTextArea.setText(content.replaceFirst(regex, replacement));
+            } catch (PatternSyntaxException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        view.assumeRoleSessionPolicyReplaceAllButton.addActionListener((ActionEvent e) -> {
+            try {
+                String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
+                String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
+                String content = view.assumeRoleSessionPolicyTextArea.getText();
+
+                if (regex.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Regex pattern cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                view.assumeRoleSessionPolicyTextArea.setText(content.replaceAll(regex, replacement));
+            } catch (PatternSyntaxException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
 
         //Command Duration text field
         view.commandCommandTextField.addFocusListener(new TextComponentFocusListener<>(this, "Command Command", CommandProfile::setCommand));
