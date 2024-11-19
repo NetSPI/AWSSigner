@@ -2,10 +2,12 @@ package com.netspi.awssigner.model;
 
 import com.netspi.awssigner.credentials.SignerCredentialException;
 import com.netspi.awssigner.credentials.SigningCredentials;
+
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Optional;
 
-public abstract class Profile {
+public abstract class Profile implements Serializable {
 
     protected String name;
     protected boolean isEnabled = true;

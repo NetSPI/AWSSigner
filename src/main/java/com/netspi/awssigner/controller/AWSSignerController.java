@@ -1,6 +1,7 @@
 package com.netspi.awssigner.controller;
 
 import burp.BurpExtender;
+import burp.IBurpExtenderCallbacks;
 import burp.IContextMenuInvocation;
 import com.netspi.awssigner.credentials.SigningCredentials;
 import com.google.gson.GsonBuilder;
@@ -33,7 +34,6 @@ import com.netspi.awssigner.view.ImportDialog;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -66,8 +66,42 @@ public class AWSSignerController {
 
         initListeners();
 
-        //Add the initial profile
-        addProfile(new StaticCredentialsProfile(INIT_PROFILE_NAME));
+        //Add the initial profile if no profiles exist already
+
+        if (this.model.profiles.isEmpty()) {
+            addProfile(new StaticCredentialsProfile(INIT_PROFILE_NAME));
+        } else {
+            this.view.profileList.setSelectedIndex(0);
+        }
+
+        syncViewWithModel();
+    }
+
+    private void syncViewWithModel(){
+
+        //Setup profile list
+        DefaultListModel listModel = resetProfileList();
+        view.profileList.setSelectedIndex(0);
+
+        //Reset "Always Sign With" combo box
+        resetAlwaysSignWithProfileComboBox();
+
+        initializeProfileConfigurationTab(model.profiles.get(0));
+
+        // Hack to preserve the state of the flag bits, since the handlers for setSelected flip the bits currently.
+        
+        int tmp = model.signForTools;
+        this.view.persistConfigurationCheckbox.setSelected(model.shouldPersist);
+        this.view.signingEnabledCheckbox.setSelected(model.isEnabled);
+        this.view.signForAllCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_SUITE) != 0);
+        this.view.signForProxyCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_PROXY) != 0);
+        this.view.signForIntruderCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_INTRUDER) != 0);
+        this.view.signForExtensionsCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_EXTENDER) != 0);
+        this.view.signForRepeaterCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_REPEATER) != 0);
+        this.view.signForTargetCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_TARGET) != 0);
+        this.view.signForScannerCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_SCANNER) != 0);
+        this.view.signForSequencerCheckbox.setSelected((model.signForTools & IBurpExtenderCallbacks.TOOL_SEQUENCER) != 0);
+        model.signForTools = tmp;
     }
 
     private void initListeners() {
@@ -76,6 +110,13 @@ public class AWSSignerController {
             logDebug("Global Signing Enabled Checkbox State Change.");
             model.isEnabled = (e.getStateChange() == ItemEvent.SELECTED);
             logInfo("Signing Enabled: " + model.isEnabled);
+        });
+
+        //Configuration persistence checkbox
+        view.persistConfigurationCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("Persist Configuration Checkbox State Change.");
+            model.shouldPersist = (e.getStateChange() == ItemEvent.SELECTED);
+            logInfo("Persist Configuration Enabled: " + model.shouldPersist);
         });
 
         //"Always Sign With" profile selection combox box
@@ -95,6 +136,62 @@ public class AWSSignerController {
                 LogWriter.setLevel(newLoggingLevel);
             }
         }));
+
+        //Sign for all check box
+        view.signForAllCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_SUITE;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+        
+        //Sign for repeater check box
+        view.signForRepeaterCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_REPEATER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for proxy check box
+        view.signForProxyCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_PROXY;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for intruder check box
+        view.signForIntruderCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_INTRUDER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign target check box
+        view.signForTargetCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_TARGET;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for extensions check box
+        view.signForExtensionsCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_EXTENDER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for sequencer check box
+        view.signForSequencerCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_SEQUENCER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
+
+        //Sign for scanner check box
+        view.signForScannerCheckbox.addItemListener((ItemEvent e) -> {
+            logDebug("signForTools before: " + Integer.toBinaryString(model.signForTools));
+            model.signForTools = model.signForTools ^ IBurpExtenderCallbacks.TOOL_SCANNER;
+            logDebug("signForTools after: " + Integer.toBinaryString(model.signForTools));
+        });
 
         //Add button
         view.addProfileButton.addActionListener(((ActionEvent e) -> {
@@ -268,6 +365,31 @@ public class AWSSignerController {
             }
 
             Profile profile = currentProfileOptional.get();
+
+            // Bug fix to use the updated config if the input text field still has focus
+            if (profile instanceof StaticCredentialsProfile) {
+                if (view.staticAccessKeyTextField.hasFocus()) {
+                    ((StaticCredentialsProfile) profile).setAccessKey(view.staticAccessKeyTextField.getText());
+                }
+                if (view.staticSecretKeyTextField.hasFocus()) {
+                    ((StaticCredentialsProfile) profile).setSecretKey(view.staticSecretKeyTextField.getText());
+                }
+                if (view.staticSessionTokenTextField.hasFocus()) {
+                    ((StaticCredentialsProfile) profile).setSessionToken(view.staticSessionTokenTextField.getText());
+                }
+            } else if (profile instanceof CommandProfile) {
+                if (view.commandCommandTextField.hasFocus()) {
+                    ((CommandProfile) profile).setCommand(view.commandCommandTextField.getText());
+                }
+                if (view.commandDurationTextField.hasFocus()) {
+                    ((CommandProfile) profile).setDurationSecondsFromText(view.commandDurationTextField.getText());
+                }
+            } else if ( profile instanceof AssumeRoleProfile) {
+                if (view.assumeRoleRoleArnTextField.hasFocus()) {
+                    ((AssumeRoleProfile) profile).setRoleArn(view.assumeRoleRoleArnTextField.getText());
+                }
+            }
+
             //Check if we even have enough information to test this profile
             if (!profile.requiredFieldsAreSet()) {
                 logDebug("Profile " + profile.getName() + " does not have all required fields");
