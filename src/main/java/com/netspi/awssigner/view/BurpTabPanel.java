@@ -410,6 +410,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
 
         assumeRoleSessionPolicyTextArea.setColumns(20);
         assumeRoleSessionPolicyTextArea.setRows(5);
+        assumeRoleSessionPolicyTextArea.setLineWrap(true); // Enable line wrapping
         assumeRoleSessionPolicyScrollPane.setViewportView(assumeRoleSessionPolicyTextArea);
 
         assumeRoleSessionPolicyPrettifyButton.setFont(assumeRoleSessionPolicyPrettifyButton.getFont());

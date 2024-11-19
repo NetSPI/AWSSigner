@@ -9,6 +9,12 @@ import java.util.function.BiConsumer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
+import javax.swing.undo.UndoManager;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
+import javax.swing.KeyStroke;
 
 class TextComponentFocusListener<T extends Profile> implements FocusListener {
 
@@ -17,11 +23,13 @@ class TextComponentFocusListener<T extends Profile> implements FocusListener {
     private final BiConsumer<T, String> updateFunction;
     private Optional<Profile> currentProfileOptional;
     private String currentValue = "";
+    private UndoManager undoManager; // Add UndoManager instance
 
     public TextComponentFocusListener(AWSSignerController controller, String propertyLoggingName, BiConsumer<T, String> updateFunction) {
         this.controller = controller;
         this.propertyLoggingName = propertyLoggingName;
         this.updateFunction = updateFunction;
+        this.undoManager = new UndoManager(); // Initialize UndoManager
     }
 
     @Override
@@ -30,6 +38,35 @@ class TextComponentFocusListener<T extends Profile> implements FocusListener {
         JTextComponent textComponent = (JTextComponent) e.getComponent();
         currentValue = textComponent.getText();
         
+        // Add UndoManager to the document
+        textComponent.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent e) {
+                undoManager.addEdit(e.getEdit());
+            }
+        });
+
+        // Add keyboard shortcuts for Undo/Redo
+        textComponent.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "Undo");
+        textComponent.getActionMap().put("Undo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (undoManager.canUndo()) {
+                    undoManager.undo();
+                }
+            }
+        });
+
+        textComponent.getInputMap().put(KeyStroke.getKeyStroke("control shift Z"), "Redo");
+        textComponent.getActionMap().put("Redo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (undoManager.canRedo()) {
+                    undoManager.redo();
+                }
+            }
+        });
+
         // Add document listener when focus is gained
         textComponent.getDocument().addDocumentListener(new DocumentListener() {
             @Override
