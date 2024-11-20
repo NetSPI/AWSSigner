@@ -15,6 +15,8 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import javax.swing.KeyStroke;
+import java.util.HashSet;
+import java.util.Set;
 
 class TextComponentFocusListener<T extends Profile> implements FocusListener {
 
@@ -23,13 +25,13 @@ class TextComponentFocusListener<T extends Profile> implements FocusListener {
     private final BiConsumer<T, String> updateFunction;
     private Optional<Profile> currentProfileOptional;
     private String currentValue = "";
-    private UndoManager undoManager; // Add UndoManager instance
+    private static final Set<JTextComponent> initializedTextFields = new HashSet<>(); // Tracks initialized fields
+    private final UndoManager undoManager = new UndoManager(); // Shared UndoManager
 
     public TextComponentFocusListener(AWSSignerController controller, String propertyLoggingName, BiConsumer<T, String> updateFunction) {
         this.controller = controller;
         this.propertyLoggingName = propertyLoggingName;
         this.updateFunction = updateFunction;
-        this.undoManager = new UndoManager(); // Initialize UndoManager
     }
 
     @Override
@@ -38,6 +40,10 @@ class TextComponentFocusListener<T extends Profile> implements FocusListener {
         JTextComponent textComponent = (JTextComponent) e.getComponent();
         currentValue = textComponent.getText();
         
+        // Add undo/redo functionality only if not already initialized
+        if (!initializedTextFields.contains(textComponent)) {
+            initializedTextFields.add(textComponent); // Mark as initialized
+
         // Add UndoManager to the document
         textComponent.getDocument().addUndoableEditListener(new UndoableEditListener() {
             @Override
@@ -56,6 +62,8 @@ class TextComponentFocusListener<T extends Profile> implements FocusListener {
                 }
             }
         });
+
+        }
 
         textComponent.getInputMap().put(KeyStroke.getKeyStroke("control shift Z"), "Redo");
         textComponent.getActionMap().put("Redo", new AbstractAction() {

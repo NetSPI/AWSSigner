@@ -420,8 +420,10 @@ public class AWSSignerController {
                 }
             } catch (PatternSyntaxException ex) {
                 JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                logError(ex.getMessage());
             } catch (BadLocationException ex) {
                 ex.printStackTrace();
+                logError(ex.getMessage());
             }
         });
 
@@ -437,9 +439,10 @@ public class AWSSignerController {
                     return;
                 }
 
-                view.assumeRoleSessionPolicyTextArea.setText(content.replaceFirst(regex, replacement));
+                view.assumeRoleSessionPolicyTextArea.setText(content.replaceFirst(regex, Matcher.quoteReplacement(replacement)));
             } catch (PatternSyntaxException ex) {
                 JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                logError(ex.getMessage());
             }
         });
 
@@ -454,9 +457,10 @@ public class AWSSignerController {
                     return;
                 }
 
-                view.assumeRoleSessionPolicyTextArea.setText(content.replaceAll(regex, replacement));
+                view.assumeRoleSessionPolicyTextArea.setText(content.replaceAll(regex, Matcher.quoteReplacement(replacement)));
             } catch (PatternSyntaxException ex) {
                 JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                logError(ex.getMessage());
             }
         });
 
