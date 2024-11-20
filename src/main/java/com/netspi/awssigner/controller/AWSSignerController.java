@@ -44,14 +44,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.util.regex.PatternSyntaxException;
-import javax.swing.text.Highlighter;
-import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.BadLocationException;
-import java.awt.Color;
-
 
 /**
  * The complex class which enforces logic and syncs up the configuration model
@@ -62,6 +55,8 @@ public class AWSSignerController {
     private final BurpTabPanel view;
     private final AWSSignerConfiguration model;
 
+    //Need this for regex match and replace
+    private RegexHandler regexHandler;
     private final static String INIT_PROFILE_NAME = "Profile 1";
 
     //Need these because we have to add and remove when setting up / updating combo boxes
@@ -71,6 +66,7 @@ public class AWSSignerController {
     public AWSSignerController(BurpTabPanel view, AWSSignerConfiguration model) {
         this.view = view;
         this.model = model;
+        this.regexHandler = new RegexHandler(view.assumeRoleSessionPolicyTextArea);
 
         initListeners();
 
@@ -391,77 +387,26 @@ public class AWSSignerController {
 
         }));
 
-        view.assumeRoleSessionPolicyFindButton.addActionListener((ActionEvent e) -> {
+        // AssumeRole Session Policy Find Button
+        view.assumeRoleSessionPolicyFindButton.addActionListener(e -> {
+            String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
             try {
-                String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
-
-                // Ensure the regex pattern is not empty
-                if (regex.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Regex pattern cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                String content = view.assumeRoleSessionPolicyTextArea.getText();
-
-                Pattern pattern = Pattern.compile(regex);
-                Matcher matcher = pattern.matcher(content);
-
-                Highlighter highlighter = view.assumeRoleSessionPolicyTextArea.getHighlighter();
-                highlighter.removeAllHighlights();
-
-                while (matcher.find()) {
-                    int start = matcher.start();
-                    int end = matcher.end();
-
-                    // Skip invalid or empty matches
-                    if (start != end) {
-                        highlighter.addHighlight(start, end, new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW));
-                    }
-                }
+                regexHandler.findAndHighlightNext(regex); // Highlight matches and cycle
             } catch (PatternSyntaxException ex) {
-                JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                logError(ex.getMessage());
-            } catch (BadLocationException ex) {
-                ex.printStackTrace();
-                logError(ex.getMessage());
+                logError("Invalid regex: " + ex.getMessage());
             }
         });
 
-
-        view.assumeRoleSessionPolicyReplaceButton.addActionListener((ActionEvent e) -> {
-            try {
-                String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
-                String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
-                String content = view.assumeRoleSessionPolicyTextArea.getText();
-
-                if (regex.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Regex pattern cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                view.assumeRoleSessionPolicyTextArea.setText(content.replaceFirst(regex, Matcher.quoteReplacement(replacement)));
-            } catch (PatternSyntaxException ex) {
-                JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                logError(ex.getMessage());
-            }
+        // AssumeRole Session Policy Replace Button
+        view.assumeRoleSessionPolicyReplaceButton.addActionListener(e -> {
+            String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
+            regexHandler.replaceCurrentMatch(replacement); // Replace the current match
         });
 
-        view.assumeRoleSessionPolicyReplaceAllButton.addActionListener((ActionEvent e) -> {
-            try {
-                String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
-                String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
-                String content = view.assumeRoleSessionPolicyTextArea.getText();
-
-                if (regex.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Regex pattern cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                view.assumeRoleSessionPolicyTextArea.setText(content.replaceAll(regex, Matcher.quoteReplacement(replacement)));
-            } catch (PatternSyntaxException ex) {
-                JOptionPane.showMessageDialog(null, "Invalid regex: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                logError(ex.getMessage());
-            }
+        // AssumeRole Session Policy Replace All Button
+        view.assumeRoleSessionPolicyReplaceAllButton.addActionListener(e -> {
+            String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
+            regexHandler.replaceAllMatches(replacement); // Replace all matches
         });
 
 
