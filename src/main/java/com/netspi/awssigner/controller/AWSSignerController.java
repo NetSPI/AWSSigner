@@ -67,6 +67,7 @@ public class AWSSignerController {
         this.view = view;
         this.model = model;
         this.regexHandler = new RegexHandler(view.assumeRoleSessionPolicyTextArea);
+        UndoRedoManager.addUndoRedoFunctionality(view.assumeRoleSessionPolicyTextArea);
 
         initListeners();
 
