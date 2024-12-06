@@ -87,10 +87,11 @@ public class RegexHandler {
                     + content.substring(end);
             textArea.setText(updatedContent);
 
-            // Adjust subsequent match positions
+            // Adjust subsequent match positions after replacement
             int adjustment = replacement.length() - (end - start);
             matchPositions.remove(currentMatchIndex);
 
+            // Recalculate the position for remaining matches
             for (int i = currentMatchIndex; i < matchPositions.size(); i++) {
                 matchPositions.get(i)[0] += adjustment;
                 matchPositions.get(i)[1] += adjustment;
@@ -102,7 +103,7 @@ public class RegexHandler {
             // Highlight the next match if any
             if (!matchPositions.isEmpty()) {
                 currentMatchIndex = currentMatchIndex % matchPositions.size();
-                highlightCurrentMatch();
+                highlightCurrentMatch(); // Ensure the current match is highlighted in orange
             } else {
                 currentMatchIndex = -1; // Reset if no matches remain
             }

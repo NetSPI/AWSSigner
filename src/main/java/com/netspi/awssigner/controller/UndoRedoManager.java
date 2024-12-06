@@ -1,9 +1,9 @@
 package com.netspi.awssigner.controller;
 
 import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import javax.swing.undo.UndoManager;
-import java.awt.Toolkit;
+import javax.swing.text.*;
+import javax.swing.undo.*;
+import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
@@ -14,7 +14,9 @@ public class UndoRedoManager {
         final UndoManager undoManager = new UndoManager();
 
         // Add UndoableEditListener to the document
-        textComponent.getDocument().addUndoableEditListener(e -> undoManager.addEdit(e.getEdit()));
+        textComponent.getDocument().addUndoableEditListener(e -> {
+            undoManager.addEdit(e.getEdit()); // Register each edit in the UndoManager
+        });
 
         // Get the platform-specific menu shortcut key mask
         int menuShortcutKeyMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();

@@ -254,13 +254,13 @@ public class AWSSignerController {
         });
 
         //Profile Region text field
-        view.profileRegionTextField.addFocusListener(new TextComponentFocusListener<>(this, "Region", Profile::setRegion));
-
+        view.profileRegionTextField.addFocusListener(new TextComponentChangeListener<>(this, view.profileRegionTextField, "Region", Profile::setRegion));
+        
         //Profile Service text field
-        view.profileServiceTextField.addFocusListener(new TextComponentFocusListener<>(this, "Service", Profile::setService));
-
+        view.profileServiceTextField.addFocusListener(new TextComponentChangeListener<>(this, view.profileServiceTextField, "Service", Profile::setService));
+        
         //Profile Key Id text field
-        view.profileKeyIdTextField.addFocusListener(new TextComponentFocusListener<>(this, "Key Id", Profile::setKeyId));
+        view.profileKeyIdTextField.addFocusListener(new TextComponentChangeListener<>(this, view.profileKeyIdTextField, "Key Id", Profile::setKeyId));
 
         //Test credentials button
         view.testProfileButton.addActionListener(((ActionEvent e) -> {
@@ -322,14 +322,14 @@ public class AWSSignerController {
 
         }));
 
-        //Static Credentials Access Key text field
-        view.staticAccessKeyTextField.addFocusListener(new TextComponentFocusListener<>(this, "Static Credentials Access Key", StaticCredentialsProfile::setAccessKey));
+        // Static Credentials Access Key text field
+        view.staticAccessKeyTextField.addFocusListener(new TextComponentChangeListener<>(this, view.staticAccessKeyTextField, "Static Credentials Access Key", StaticCredentialsProfile::setAccessKey));
 
-        //Static Credentials Secret Key text field
-        view.staticSecretKeyTextField.addFocusListener(new TextComponentFocusListener<>(this, "Static Credentials Secret Key", StaticCredentialsProfile::setSecretKey));
+        // Static Credentials Secret Key text field
+        view.staticSecretKeyTextField.addFocusListener(new TextComponentChangeListener<>(this, view.staticSecretKeyTextField, "Static Credentials Secret Key", StaticCredentialsProfile::setSecretKey));
 
-        //Static Credentials Session Token text field
-        view.staticSessionTokenTextField.addFocusListener(new TextComponentFocusListener<>(this, "Static Credentials Secret Key", StaticCredentialsProfile::setSessionToken));
+        // Static Credentials Session Token text field
+        view.staticSessionTokenTextField.addFocusListener(new TextComponentChangeListener<>(this, view.staticSessionTokenTextField, "Static Credentials Secret Key", StaticCredentialsProfile::setSessionToken));
 
         //AssumeRole assumer profile
         assumerProfileComboBoxProfileSelectionListener = new ComboBoxProfileSelectionListener(model, "Always Sign With", (Profile profile) -> {
@@ -340,20 +340,20 @@ public class AWSSignerController {
         });
         view.assumeRoleAssumerProfileComboBox.addItemListener(assumerProfileComboBoxProfileSelectionListener);
 
-        //AssumeRole Role ARN text field
-        view.assumeRoleRoleArnTextField.addFocusListener(new TextComponentFocusListener<>(this, "AssumeRole Role ARN", AssumeRoleProfile::setRoleArn));
+        // AssumeRole Role ARN text field
+        view.assumeRoleRoleArnTextField.addFocusListener(new TextComponentChangeListener<>(this, view.assumeRoleRoleArnTextField, "AssumeRole Role ARN", AssumeRoleProfile::setRoleArn));
 
-        //AssumeRole Session Name text field
-        view.assumeRoleSessionNameTextField.addFocusListener(new TextComponentFocusListener<>(this, "AssumeRole Session Name", AssumeRoleProfile::setSessionName));
+        // AssumeRole Session Name text field
+        view.assumeRoleSessionNameTextField.addFocusListener(new TextComponentChangeListener<>(this, view.assumeRoleSessionNameTextField, "AssumeRole Session Name", AssumeRoleProfile::setSessionName));
 
-        //AssumeRole External Id text field
-        view.assumeRoleExternalIdTextField.addFocusListener(new TextComponentFocusListener<>(this, "AssumeRole External Id", AssumeRoleProfile::setExternalId));
+        // AssumeRole External Id text field
+        view.assumeRoleExternalIdTextField.addFocusListener(new TextComponentChangeListener<>(this, view.assumeRoleExternalIdTextField, "AssumeRole External Id", AssumeRoleProfile::setExternalId));
 
-        //AssumeRole Duration text field
-        view.assumeRoleDurationTextField.addFocusListener(new TextComponentFocusListener<>(this, "AssumeRole Duration Seconds", AssumeRoleProfile::setDurationSecondsFromText));
+        // AssumeRole Duration text field
+        view.assumeRoleDurationTextField.addFocusListener(new TextComponentChangeListener<>(this, view.assumeRoleDurationTextField, "AssumeRole Duration Seconds", AssumeRoleProfile::setDurationSecondsFromText));
 
-        //AssumeRole Session Policy text area
-        view.assumeRoleSessionPolicyTextArea.addFocusListener(new TextComponentFocusListener<>(this, "AssumeRole Session Policy", AssumeRoleProfile::setSessionPolicy));
+        // AssumeRole Session Policy text area
+        view.assumeRoleSessionPolicyTextArea.addFocusListener(new TextComponentChangeListener<>(this, view.assumeRoleSessionPolicyTextArea, "AssumeRole Session Policy", AssumeRoleProfile::setSessionPolicy));
 
         //AssumeRole Session Policy Prettify Button
         view.assumeRoleSessionPolicyPrettifyButton.addActionListener(((ActionEvent e) -> {
@@ -410,13 +410,12 @@ public class AWSSignerController {
             regexHandler.replaceAllMatches(replacement); // Replace all matches
         });
 
+        // Command Command text field
+        view.commandCommandTextField.addFocusListener(new TextComponentChangeListener<>(this, view.commandCommandTextField, "Command Command", CommandProfile::setCommand));
 
-        //Command Duration text field
-        view.commandCommandTextField.addFocusListener(new TextComponentFocusListener<>(this, "Command Command", CommandProfile::setCommand));
-
-        //Command Duration text field
-        view.commandDurationTextField.addFocusListener(new TextComponentFocusListener<>(this, "Command Duration Seconds", CommandProfile::setDurationSecondsFromText));
-
+        // Command Duration text field
+        view.commandDurationTextField.addFocusListener(new TextComponentChangeListener<>(this, view.commandDurationTextField, "Command Duration Seconds", CommandProfile::setDurationSecondsFromText));
+        
         //Add focus handler to various components (panels, etc) to ensure that when the user clicks out of input field, that field loses focus.
         addFocusGrabber(view.globalSettingsPanel);
         addFocusGrabber(view.profileListScrollPane);
