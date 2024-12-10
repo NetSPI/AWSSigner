@@ -1,56 +1,82 @@
 package com.netspi.awssigner.controller;
 
-import javax.swing.*;
-import javax.swing.text.*;
-import java.awt.*;
-import java.util.*;
-import java.util.regex.*;
 import static com.netspi.awssigner.log.LogWriter.logError;
 
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 /**
- * Handles regex-based search, highlighting, and replacement for a JTextArea.
+ * RegexHighlighter provides search, highlight, and replace capabilities for text in a JTextArea
+ * using regex patterns. Matches are highlighted to help the user visually locate and manipulate
+ * specific segments of text.
+ *
+ * Usage:
+ * 1. Instantiate with a JTextArea.
+ * 2. Call findAndHighlightNext(regex) to initiate searching.
+ * 3. Use replaceCurrentMatch or replaceAllMatches as needed.
  */
-public class RegexHandler {
+public class RegexHighlighter {
 
     private final JTextArea textArea;
     private final Highlighter highlighter;
-    private final java.util.List<int[]> matchPositions;
+    private final List<int[]> matchPositions;
     private int currentMatchIndex = -1;
-    private String currentRegex; // Store the last used regex pattern
+    private String currentRegex;
 
-    public RegexHandler(JTextArea textArea) {
+    /**
+     * Creates a new RegexHighlighter for a given JTextArea.
+     *
+     * @param textArea The JTextArea to search and highlight.
+     */
+    public RegexHighlighter(JTextArea textArea) {
         this.textArea = textArea;
         this.highlighter = textArea.getHighlighter();
         this.matchPositions = new ArrayList<>();
         this.currentRegex = null;
     }
 
+    /**
+     * Finds matches for the given regex and highlights them. If called repeatedly with the same regex,
+     * it cycles through found matches. If a new regex is provided, it clears previous highlights
+     * and searches anew.
+     *
+     * @param regex The regex pattern to find.
+     * @throws PatternSyntaxException If the provided regex is invalid.
+     */
     public void findAndHighlightNext(String regex) throws PatternSyntaxException {
         if (currentRegex == null || !currentRegex.equals(regex)) {
             // Perform a new search if the regex changes
             findAllMatches(regex);
-            currentMatchIndex = 0; // Start with the first match
+            currentMatchIndex = 0; // Start at the first match
         } else if (!matchPositions.isEmpty()) {
             // Cycle to the next match if there are matches
             currentMatchIndex = (currentMatchIndex + 1) % matchPositions.size();
         }
 
         if (!matchPositions.isEmpty()) {
-            updateHighlights(); // Highlight matches and the current match
+            updateHighlights();
         }
     }
 
     /**
-     * Finds all matches and stores their positions.
+     * Finds all matches of the given regex in the text and stores their positions.
      *
-     * @param regex The regex pattern to search for
+     * @param regex The regex pattern to search for.
      * @throws PatternSyntaxException if the regex is invalid
      */
     private void findAllMatches(String regex) throws PatternSyntaxException {
         clearHighlights();
         matchPositions.clear();
 
-        currentRegex = regex; // Store the current regex
+        currentRegex = regex;
         String content = textArea.getText();
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(content);
@@ -61,13 +87,13 @@ public class RegexHandler {
             matchPositions.add(new int[]{start, end});
         }
 
-        currentMatchIndex = matchPositions.isEmpty() ? -1 : 0; // Reset match index
+        currentMatchIndex = matchPositions.isEmpty() ? -1 : 0;
     }
 
     /**
-     * Replaces the current highlighted match with the given replacement.
+     * Replaces the current highlighted match with the given replacement text.
      *
-     * @param replacement The text to replace the current match
+     * @param replacement The replacement text.
      */
     public void replaceCurrentMatch(String replacement) {
         if (!hasCurrentMatch()) {
@@ -81,31 +107,28 @@ public class RegexHandler {
             int start = currentMatch[0];
             int end = currentMatch[1];
 
-            // Replace the current match using a quoted replacement
+            // Perform the replacement
             String updatedContent = content.substring(0, start)
                     + Matcher.quoteReplacement(replacement)
                     + content.substring(end);
             textArea.setText(updatedContent);
 
-            // Adjust subsequent match positions after replacement
+            // Adjust subsequent matches due to the changed length
             int adjustment = replacement.length() - (end - start);
             matchPositions.remove(currentMatchIndex);
 
-            // Recalculate the position for remaining matches
             for (int i = currentMatchIndex; i < matchPositions.size(); i++) {
                 matchPositions.get(i)[0] += adjustment;
                 matchPositions.get(i)[1] += adjustment;
             }
 
-            // Highlight remaining matches
             highlightAllMatches();
 
-            // Highlight the next match if any
             if (!matchPositions.isEmpty()) {
                 currentMatchIndex = currentMatchIndex % matchPositions.size();
-                highlightCurrentMatch(); // Ensure the current match is highlighted in orange
+                highlightCurrentMatch();
             } else {
-                currentMatchIndex = -1; // Reset if no matches remain
+                currentMatchIndex = -1;
             }
         } catch (Exception e) {
             logError("Error replacing current match: " + e.getMessage());
@@ -113,13 +136,36 @@ public class RegexHandler {
     }
 
     /**
-     * Highlights all matches in yellow, except the current match.
+     * Replaces all matches of the current regex in the text with the given replacement text.
+     *
+     * @param replacement The replacement text.
+     */
+    public void replaceAllMatches(String replacement) {
+        if (matchPositions.isEmpty() || currentRegex == null) {
+            logError("No matches to replace.");
+            return;
+        }
+
+        try {
+            String content = textArea.getText();
+            String updatedContent = content.replaceAll(currentRegex, Matcher.quoteReplacement(replacement));
+            textArea.setText(updatedContent);
+
+            clearHighlights();
+            matchPositions.clear();
+        } catch (Exception e) {
+            logError("Error replacing all matches: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Highlights all matches in yellow. The current match (if any) is highlighted in orange.
      */
     private void highlightAllMatches() {
         clearHighlights(); // Clear existing highlights
         try {
             for (int i = 0; i < matchPositions.size(); i++) {
-                if (i != currentMatchIndex) { // Skip the current match
+                if (i != currentMatchIndex) {
                     int[] match = matchPositions.get(i);
                     highlighter.addHighlight(match[0], match[1], new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW));
                 }
@@ -130,7 +176,7 @@ public class RegexHandler {
     }
 
     /**
-     * Highlights the current match in orange.
+     * Highlights the current match in orange to distinguish it from other matches.
      */
     private void highlightCurrentMatch() {
         if (!hasCurrentMatch()) {
@@ -147,39 +193,15 @@ public class RegexHandler {
     }
 
     /**
-     * Highlights all matches and the current match.
+     * Updates the highlights to reflect the current set of matches and which one is "current".
      */
     private void updateHighlights() {
-        highlightAllMatches(); // Highlight all matches in yellow, except the current one
-        highlightCurrentMatch(); // Highlight the current match in orange
+        highlightAllMatches();
+        highlightCurrentMatch();
     }
 
     /**
-     * Replaces all matches with the given replacement.
-     *
-     * @param replacement The text to replace all matches
-     */
-    public void replaceAllMatches(String replacement) {
-        if (matchPositions.isEmpty() || currentRegex == null) {
-            logError("No matches to replace.");
-            return;
-        }
-
-        try {
-            String content = textArea.getText();
-            // Use quoted replacement for safety
-            String updatedContent = content.replaceAll(currentRegex, Matcher.quoteReplacement(replacement));
-            textArea.setText(updatedContent);
-
-            clearHighlights();
-            matchPositions.clear();
-        } catch (Exception e) {
-            logError("Error replacing all matches: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Clears all highlights in the text area.
+     * Clears all highlights from the text area.
      */
     private void clearHighlights() {
         try {
@@ -190,18 +212,18 @@ public class RegexHandler {
     }
 
     /**
-     * Checks if a current match is highlighted.
+     * Checks if there is a current match selected.
      *
-     * @return True if a current match exists, otherwise false
+     * @return True if there is a current match, false otherwise.
      */
     public boolean hasCurrentMatch() {
         return currentMatchIndex >= 0 && currentMatchIndex < matchPositions.size();
     }
 
     /**
-     * Gets the total number of matches found.
+     * Returns the count of all found matches.
      *
-     * @return The count of matches
+     * @return The number of matches found for the current regex.
      */
     public int getMatchCount() {
         return matchPositions.size();
