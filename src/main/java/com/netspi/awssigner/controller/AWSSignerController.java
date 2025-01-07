@@ -1,5 +1,5 @@
 package com.netspi.awssigner.controller;
-
+ 
 import burp.BurpExtender;
 import burp.IContextMenuInvocation;
 import com.google.gson.GsonBuilder;
@@ -46,34 +46,38 @@ import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
-
-
+import javax.swing.text.Document;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+ 
+ 
+ 
 /**
  * The controller class which enforces logic and syncs up the configuration model
  * and the UI view. This class coordinates between the UI (view), the configuration model,
  * and the credentials logic.
  */
 public class AWSSignerController {
-
+ 
     private final BurpTabPanel view;
     private final AWSSignerConfiguration model;
-
+ 
     private final static String INIT_PROFILE_NAME = "Profile 1";
-
+ 
     //Need these because we have to add and remove when setting up / updating combo boxes
     private ComboBoxProfileSelectionListener alwaysSignWithComboBoxProfileSelectionListener;
     private ComboBoxProfileSelectionListener assumerProfileComboBoxProfileSelectionListener;
-
+ 
     public AWSSignerController(BurpTabPanel view, AWSSignerConfiguration model) {
         this.view = view;
         this.model = model;
-
+ 
         initListeners();
-
+ 
         //Add the initial profile
         addProfile(new StaticCredentialsProfile(INIT_PROFILE_NAME));
     }
-
+ 
     private void initListeners() {
         //Global signing checkbox
         view.signingEnabledCheckbox.addItemListener((ItemEvent e) -> {
@@ -81,14 +85,14 @@ public class AWSSignerController {
             model.isEnabled = (e.getStateChange() == ItemEvent.SELECTED);
             logInfo("Signing Enabled: " + model.isEnabled);
         });
-
+ 
         //"Always Sign With" profile selection combo box
         alwaysSignWithComboBoxProfileSelectionListener = new ComboBoxProfileSelectionListener(model, "Always Sign With", (Profile profile) -> {
             logDebug("Setting \"Always Sign With\" Profile to: " + profile);
             model.alwaysSignWithProfile = profile;
         });
         view.alwaysSignWithProfileComboBox.addItemListener(alwaysSignWithComboBoxProfileSelectionListener);
-
+ 
         //Logging Level combo box
         view.logLevelComboBox.addItemListener(((event) -> {
             logDebug("Log Level ComboBox Item Event:" + " StateChange: " + event.getStateChange() + " Item: " + event.getItem());
@@ -99,7 +103,7 @@ public class AWSSignerController {
                 LogWriter.setLevel(newLoggingLevel);
             }
         }));
-
+ 
         //Add button
         view.addProfileButton.addActionListener(((ActionEvent e) -> {
             logDebug("Add Profile Button Clicked.");
@@ -116,11 +120,11 @@ public class AWSSignerController {
                 logInfo("No new profile returned from Add dialog.");
             }
         }));
-
+ 
         //Delete button
         view.deleteProfileButton.addActionListener(((ActionEvent e) -> {
             logDebug("Delete Profile Button Clicked.");
-
+ 
             Optional<Profile> currentSelectedProfileOptional = getCurrentSelectedProfile();
             if (currentSelectedProfileOptional.isEmpty()) {
                 logError("There is no current profile selected. Cannot delete.");
@@ -128,7 +132,7 @@ public class AWSSignerController {
             }
             final Profile selectedProfile = currentSelectedProfileOptional.get();
             final String selectedProfileName = selectedProfile.getName();
-
+ 
             //Check if selectedProfile is allowed to be deleted.
             //No other profile must use this one as the assumer
             List<String> dependentProfileNames = model.profiles.stream().filter(profile -> {
@@ -142,7 +146,7 @@ public class AWSSignerController {
                         "Cannot Delete Profile", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+ 
             //Check if the selected profile is currently the default profile
             if (model.alwaysSignWithProfile != null && model.alwaysSignWithProfile.getName().equals(selectedProfileName)) {
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(view),
@@ -150,7 +154,7 @@ public class AWSSignerController {
                         "Cannot Delete Profile", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+ 
             //Show confirmation dialog
             int result = JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(view),
                     "Are you sure you want to delete profile " + selectedProfileName + "?",
@@ -164,7 +168,7 @@ public class AWSSignerController {
                 logInfo("Deletion was not confirmed");
             }
         }));
-
+ 
         //Copy button
         view.copyProfileButton.addActionListener(((ActionEvent e) -> {
             logDebug("Copy Profile Button Clicked.");
@@ -188,7 +192,7 @@ public class AWSSignerController {
                 logInfo("No currently selected profile to copy.");
             }
         }));
-
+ 
         //Import button
         view.importProfilesButton.addActionListener(((ActionEvent e) -> {
             logDebug("Import Profile Button Clicked.");
@@ -205,7 +209,7 @@ public class AWSSignerController {
                 logInfo("No new profiles returned from import dialog.");
             }
         }));
-
+ 
         //Export button
         view.exportProfilesButton.addActionListener(((ActionEvent e) -> {
             logDebug("Export Profile Button Clicked.");
@@ -220,7 +224,7 @@ public class AWSSignerController {
                 }
             }
         }));
-
+ 
         //Selected profile
         view.profileList.addListSelectionListener((ListSelectionEvent e) -> {
             boolean valueIsAdjusting = e.getValueIsAdjusting();
@@ -230,7 +234,7 @@ public class AWSSignerController {
                     + " FirstIndex: " + e.getFirstIndex()
                     + " LastIndex: " + e.getLastIndex()
                     + " Selected Profile Name: " + selectedProfileName);
-
+ 
             //We only care about the final result
             if (!valueIsAdjusting && selectedProfileName != null) {
                 logInfo("Profile List Item Selected Value: " + selectedProfileName);
@@ -238,66 +242,66 @@ public class AWSSignerController {
                 //Update the display to show the profile's configuration.
                 initializeProfileConfigurationTab(selectedProfile);
             }
-
+ 
         });
-
+ 
         //Profile enabled checkbox 
         view.profileEnabledCheckbox.addItemListener((ItemEvent e) -> {
             handleProfileConfigurationCheckboxEvent(e, "Signing Enabled", Profile::setEnabled);
         });
-
+ 
         //Profile in-scope-only checkbox 
         view.profileInScopeOnlyCheckbox.addItemListener((ItemEvent e) -> {
             handleProfileConfigurationCheckboxEvent(e, "In-Scope Only Checkbox", Profile::setInScopeOnly);
         });
-
+ 
         //Profile Region text field
         new TextChangeHandler(
             view.profileRegionTextField,
             "Region",
             createProfileFieldConsumer("Region", Profile::setRegion)
         );
-
+ 
         //Profile Service text field
         new TextChangeHandler(
             view.profileServiceTextField,
             "Service",
             createProfileFieldConsumer("Service", Profile::setService)
         );
-
+ 
         //Profile Key Id text field
         new TextChangeHandler(
             view.profileKeyIdTextField,
             "Key Id",
             createProfileFieldConsumer("Key Id", Profile::setKeyId)
         );
-
+ 
         //Test credentials button
         view.testProfileButton.addActionListener(((ActionEvent e) -> {
             logDebug("Test Credentials Button Clicked.");
-
+ 
             Optional<Profile> currentProfileOptional = getCurrentSelectedProfile();
             if (currentProfileOptional.isEmpty()) {
                 logDebug("There is no currently selected profile to test credentials for.");
                 return;
             }
-
+ 
             Profile profile = currentProfileOptional.get();
             if (!profile.requiredFieldsAreSet()) {
                 logDebug("Profile " + profile.getName() + " does not have all required fields");
                 updateProfileStatus();
                 return;
             }
-
+ 
             view.profileStatusTextLabel.setText("Starting profile test");
-
+ 
             //Run in another thread to not block the UI
             new Thread(() -> {
                 ProfileCredentialTester tester = new ProfileCredentialTester(profile);
                 try {
                     SigningCredentials creds = tester.testProfile();
                     logInfo("Successfully obtained credentials with profile: " + profile.getName());
-
+ 
                     //Check if we're still showing the same profile
                     Optional<Profile> newProfileOptional = getCurrentSelectedProfile();
                     if (newProfileOptional.isEmpty()) {
@@ -325,7 +329,7 @@ public class AWSSignerController {
                 }
             }).start();
         }));
-
+ 
         // Static Credentials Access Key text field
         new TextChangeHandler(
             view.staticAccessKeyTextField,
@@ -334,7 +338,7 @@ public class AWSSignerController {
                 ((StaticCredentialsProfile) profile).setAccessKey(newValue);
             })
         );
-
+ 
         // Static Credentials Secret Key text field
         new TextChangeHandler(
             view.staticSecretKeyTextField,
@@ -343,7 +347,7 @@ public class AWSSignerController {
                 ((StaticCredentialsProfile) profile).setSecretKey(newValue);
             })
         );
-
+ 
         // Static Credentials Session Token text field
         new TextChangeHandler(
             view.staticSessionTokenTextField,
@@ -352,7 +356,7 @@ public class AWSSignerController {
                 ((StaticCredentialsProfile) profile).setSessionToken(newValue);
             })
         );
-
+ 
         //AssumeRole assumer profile combo box
         assumerProfileComboBoxProfileSelectionListener = new ComboBoxProfileSelectionListener(model, "Always Sign With", (Profile profile) -> {
             AssumeRoleProfile currentSelectedProfile = (AssumeRoleProfile) getCurrentSelectedProfile().get();
@@ -360,7 +364,7 @@ public class AWSSignerController {
             currentSelectedProfile.setAssumerProfile(profile);
         });
         view.assumeRoleAssumerProfileComboBox.addItemListener(assumerProfileComboBoxProfileSelectionListener);
-
+ 
         // AssumeRole Role ARN text field
         new TextChangeHandler(
             view.assumeRoleRoleArnTextField,
@@ -369,7 +373,7 @@ public class AWSSignerController {
                 ((AssumeRoleProfile) profile).setRoleArn(newValue);
             })
         );
-
+ 
         // AssumeRole Session Name text field
         new TextChangeHandler(
             view.assumeRoleSessionNameTextField,
@@ -378,7 +382,7 @@ public class AWSSignerController {
                 ((AssumeRoleProfile) profile).setSessionName(newValue);
             })
         );
-
+ 
         // AssumeRole External Id text field
         new TextChangeHandler(
             view.assumeRoleExternalIdTextField,
@@ -387,7 +391,7 @@ public class AWSSignerController {
                 ((AssumeRoleProfile) profile).setExternalId(newValue);
             })
         );
-
+ 
         // AssumeRole Duration text field
         new TextChangeHandler(
             view.assumeRoleDurationTextField,
@@ -396,7 +400,7 @@ public class AWSSignerController {
                 ((AssumeRoleProfile) profile).setDurationSecondsFromText(newValue);
             })
         );
-
+ 
         // AssumeRole Session Policy text area
         new TextChangeHandler(
             view.assumeRoleSessionPolicyTextArea,
@@ -405,31 +409,41 @@ public class AWSSignerController {
                 ((AssumeRoleProfile) profile).setSessionPolicy(newValue);
             })
         );
-
+ 
         // Add Undo/Redo support to the text areas where appropriate (for example, AssumeRole session policy)
         new TextUndoRedoSupport(view.assumeRoleSessionPolicyTextArea);
-
+ 
         // Setup regex highlighter for the session policy text area
         RegexHighlighter regexHighlighter = new RegexHighlighter(view.assumeRoleSessionPolicyTextArea);
-
+ 
         //AssumeRole Session Policy Prettify Button
         view.assumeRoleSessionPolicyPrettifyButton.addActionListener(((ActionEvent e) -> {
             logDebug("Session Policy Prettify Button Clicked.");
             AssumeRoleProfile currentSelectedProfile = (AssumeRoleProfile) getCurrentSelectedProfile().get();
             Optional<String> sessionPolicyOptional = currentSelectedProfile.getSessionPolicy();
-
+ 
             if (sessionPolicyOptional.isPresent()) {
                 String sessionPolicy = sessionPolicyOptional.get();
                 try {
                     //Parse the session policy text into JSON
                     JsonObject json = JsonParser.parseString(sessionPolicy).getAsJsonObject();
                     String prettyJson = new GsonBuilder().setPrettyPrinting().create().toJson(json);
-
-                    //Set both the profile value and the UI field
-                    view.assumeRoleSessionPolicyTextArea.setText(prettyJson);
+ 
+                    //Set the UI. This should be a single, atomic change to preserve undo/redo behavior
+                    Document doc = view.assumeRoleSessionPolicyTextArea.getDocument();
+                    if (doc instanceof AbstractDocument) {
+                        AbstractDocument aDoc = (AbstractDocument) doc;
+                        aDoc.replace(0, aDoc.getLength(), prettyJson, null);
+                    } else {
+                        // Fallback if not an AbstractDocument, though typically JTextArea uses PlainDocument which is an AbstractDocument.
+                        view.assumeRoleSessionPolicyTextArea.setText(prettyJson);
+                    }
+ 
+                    //Set the profile value
                     currentSelectedProfile.setSessionPolicy(prettyJson);
-                } catch (RuntimeException ex) {
-                    logError("Unable to parse session policy into JSON object and pretty print. Current value: " + sessionPolicy);
+                    logDebug("Session policy prettified successfully.");
+                } catch (RuntimeException | BadLocationException ex) {
+                    logError("Unable to parse session policy into JSON object or update text area. Current value: " + sessionPolicy);
                     Throwable cause = ex.getCause() == null ? ex : ex.getCause();
                     view.profileStatusTextLabel.putClientProperty("html.disable", null);
                     view.profileStatusTextLabel.setText("<html><b>Session policy error:</b> " + cause.getMessage() + "</html>");
@@ -437,9 +451,8 @@ public class AWSSignerController {
             } else {
                 logDebug("There's no current session policy. Nothing to set.");
             }
-
         }));
-
+ 
         // AssumeRole Session Policy Find Button
         view.assumeRoleSessionPolicyFindButton.addActionListener(e -> {
             String regex = view.assumeRoleSessionPolicyRegexField.getText().trim();
@@ -449,19 +462,19 @@ public class AWSSignerController {
                 logError("Invalid regex: " + ex.getMessage());
             }
         });
-
+ 
         // AssumeRole Session Policy Replace Button
         view.assumeRoleSessionPolicyReplaceButton.addActionListener(e -> {
             String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
             regexHighlighter.replaceCurrentMatch(replacement);
         });
-
+ 
         // AssumeRole Session Policy Replace All Button
         view.assumeRoleSessionPolicyReplaceAllButton.addActionListener(e -> {
             String replacement = view.assumeRoleSessionPolicyReplacementField.getText();
             regexHighlighter.replaceAllMatches(replacement);
         });
-
+ 
         // Command Command text field
         new TextChangeHandler(
             view.commandCommandTextField,
@@ -470,7 +483,7 @@ public class AWSSignerController {
                 ((CommandProfile) profile).setCommand(newValue);
             })
         );
-
+ 
         // Command Duration text field
         new TextChangeHandler(
             view.commandDurationTextField,
@@ -479,7 +492,7 @@ public class AWSSignerController {
                 ((CommandProfile) profile).setDurationSecondsFromText(newValue);
             })
         );
-
+ 
         //Add focus handler to grab focus for containers
         addFocusGrabber(view.globalSettingsPanel);
         addFocusGrabber(view.profileListScrollPane);
@@ -491,8 +504,8 @@ public class AWSSignerController {
         addFocusGrabber(view.commandPanel);
         addFocusGrabber(view.commandPanel);
     }
-
-
+ 
+ 
     /**
      * A helper method to avoid repeating similar code for updating profile fields.
      * This method returns a Consumer<String> that:
@@ -518,7 +531,7 @@ public class AWSSignerController {
             }
         };
     }
-
+ 
     private void addFocusGrabber(final Component focusable) {
         focusable.addMouseListener(new MouseAdapter() {
             @Override
@@ -528,7 +541,7 @@ public class AWSSignerController {
             }
         });
     }
-
+ 
     private void handleProfileConfigurationCheckboxEvent(ItemEvent e, String propertyLoggingName, BiConsumer<Profile, Boolean> updateFunction) {
         logDebug("Profile " + propertyLoggingName + " State Change:" + e.getStateChange());
         boolean checkboxEnabled = (e.getStateChange() == ItemEvent.SELECTED);
@@ -542,21 +555,21 @@ public class AWSSignerController {
         }
         updateProfileStatus();
     }
-
+ 
     private void addProfile(Profile newProfile) {
         //Add it to our model for tracking
         model.profiles.add(newProfile);
-
+ 
         //Setup profile list
         DefaultListModel listModel = resetProfileList();
         view.profileList.setSelectedIndex(listModel.indexOf(newProfile.getName()));
-
+ 
         //Reset "Always Sign With" combo box
         resetAlwaysSignWithProfileComboBox();
-
+ 
         initializeProfileConfigurationTab(newProfile);
     }
-
+ 
     private void deleteProfile(Profile profile) {
         //Confirm our model contains the profile
         if (!model.profiles.contains(profile)) {
@@ -564,7 +577,7 @@ public class AWSSignerController {
             return;
         }
         logDebug("Removing " + profile.getName());
-
+ 
         if (model.profiles.size() == 1) {
             //If there's only one profile
             logDebug("Removing only profile. Resetting to initial display");
@@ -575,7 +588,7 @@ public class AWSSignerController {
         } else {
             //There is at least one other profile. Select the next one. 
             logDebug("Removing profile and selecting the next in line.");
-
+ 
             //Determine which profile will be shown next.
             DefaultListModel listModel = resetProfileList();
             int indexToBeDeleted = listModel.indexOf(profile.getName());
@@ -587,24 +600,24 @@ public class AWSSignerController {
                 nextSelectionIndex = indexToBeDeleted + 1;
             }
             String nextProfileName = (String) listModel.get(nextSelectionIndex);
-
+ 
             //OK now remove it
             model.profiles.remove(profile);
             resetProfileList();
             resetAlwaysSignWithProfileComboBox();
-
+ 
             //Select and display the next choice.
             listModel = resetProfileList();
             Profile selectedProfile = model.getProfileForName(nextProfileName).get();
             view.profileList.setSelectedIndex(listModel.indexOf(nextProfileName));
             initializeProfileConfigurationTab(selectedProfile);
         }
-
+ 
     }
-
+ 
     private void initializeProfileConfigurationTab(Profile currentProfile) {
         initializeProfileConfigurationCommonFields(currentProfile);
-
+ 
         //Handle type-specific fields
         if (currentProfile instanceof StaticCredentialsProfile) {
             StaticCredentialsProfile staticCredentialsProfile = (StaticCredentialsProfile) currentProfile;
@@ -621,11 +634,11 @@ public class AWSSignerController {
         } else {
             throw new IllegalStateException("Profile does not match expected type. Found Type: " + currentProfile.getClass().getName());
         }
-
+ 
         //Update the profile's status:
         updateProfileStatus();
     }
-
+ 
     private void resetProfileConfigurationTabToDefault() {
         //Reset the "common" fields
         view.profileNameLabel.setText("[Add A Profile To Begin]");
@@ -640,7 +653,7 @@ public class AWSSignerController {
         view.profileKeyIdTextField.setEnabled(false);
         view.profileKeyIdTextField.setText("");
         view.testProfileButton.setEnabled(false);
-
+ 
         //Default to the static creds card
         ((CardLayout) view.credentialCardContainerPanel.getLayout()).show(view.credentialCardContainerPanel, "static_credentials_card");
         view.staticAccessKeyTextField.setEnabled(false);
@@ -652,9 +665,9 @@ public class AWSSignerController {
         view.staticSessionTokenTextField.setEnabled(false);
         view.staticSessionTokenTextField.setText("");
         view.profileStatusTextLabel.setText("Must add profile to begin editing");
-
+ 
     }
-
+ 
     private void initializeProfileConfigurationCommonFields(Profile currentProfile) {
         //Update the Profile Configuration Tab common fields
         view.profileNameLabel.setText(currentProfile.getName());
@@ -670,12 +683,12 @@ public class AWSSignerController {
         view.profileKeyIdTextField.setText(currentProfile.getKeyId().orElse(""));
         view.testProfileButton.setEnabled(true);
     }
-
+ 
     private void initializeStaticCredentialsProfileFields(StaticCredentialsProfile staticCredentialsProfile) {
         String accessKey = staticCredentialsProfile.getAccessKey().orElse("");
         String secretKey = staticCredentialsProfile.getSecretKey().orElse("");
         String sessionToken = staticCredentialsProfile.getSessionToken().orElse("");
-
+ 
         view.staticAccessKeyTextField.setEnabled(true);
         view.staticAccessKeyTextField.setText(accessKey);
         view.staticAccessKeyTextField.getInputVerifier().shouldYieldFocus(view.staticAccessKeyTextField, view.staticAccessKeyTextField);
@@ -684,7 +697,7 @@ public class AWSSignerController {
         view.staticSecretKeyTextField.getInputVerifier().shouldYieldFocus(view.staticSecretKeyTextField, view.staticSecretKeyTextField);
         view.staticSessionTokenTextField.setEnabled(true);
         view.staticSessionTokenTextField.setText(sessionToken);
-
+ 
         //Calculate initial status
         if ((accessKey.isEmpty()) && (secretKey.isEmpty())) {
             view.profileStatusTextLabel.setText("Missing Access Key and Secret Key");
@@ -696,9 +709,9 @@ public class AWSSignerController {
             view.profileStatusTextLabel.setText("Ready for testing");
         }
     }
-
+ 
     private void initializeAssumeRoleProfileFields(AssumeRoleProfile assumeRoleProfile) {
-
+ 
         //Calculate which profiles may be used as the assumer
         List<Profile> profiles = model.profiles;
         List<String> profileNames = profiles.stream()
@@ -711,13 +724,13 @@ public class AWSSignerController {
                         logDebug("Excluding self from assumer profile choices: " + potentialAssumerProfileName);
                         return false;
                     }
-
+ 
                     //This loop prevents a cycle of assume role. Walk up the chain
                     // of assumer profiles and confirm the current profile isn't present
                     // in that chain.
                     Profile potentialAssumer = profile;
                     while (potentialAssumer instanceof AssumeRoleProfile) {
-
+ 
                         //This is an assume role profile itself.
                         Optional<Profile> parentAssumerProfileOptional = ((AssumeRoleProfile) potentialAssumer).getAssumerProfile();
                         //Check if the parent is set.
@@ -746,7 +759,7 @@ public class AWSSignerController {
                 })
                 .map(Profile::getName)
                 .collect(Collectors.toList());
-
+ 
         //Setup the assumer profile combobox
         view.assumeRoleAssumerProfileComboBox.removeItemListener(assumerProfileComboBoxProfileSelectionListener);
         view.assumeRoleAssumerProfileComboBox.removeAllItems();
@@ -754,14 +767,14 @@ public class AWSSignerController {
         profileNames.forEach((name) -> {
             view.assumeRoleAssumerProfileComboBox.addItem(name);
         });
-
+ 
         if (assumeRoleProfile.getAssumerProfile().isPresent()) {
             String parentAssumerProfileName = assumeRoleProfile.getAssumerProfile().get().getName();
             logDebug("Setting selected assumer profile to: " + parentAssumerProfileName);
             view.assumeRoleAssumerProfileComboBox.setSelectedItem(parentAssumerProfileName);
         }
         view.assumeRoleAssumerProfileComboBox.addItemListener(assumerProfileComboBoxProfileSelectionListener);
-
+ 
         view.assumeRoleRoleArnTextField.setText(assumeRoleProfile.getRoleArn().orElse(null));
         view.assumeRoleRoleArnTextField.getInputVerifier().shouldYieldFocus(view.assumeRoleRoleArnTextField, view.assumeRoleRoleArnTextField);
         view.assumeRoleSessionNameTextField.setText(assumeRoleProfile.getSessionName().orElse(null));
@@ -773,9 +786,9 @@ public class AWSSignerController {
         }
         view.assumeRoleDurationTextField.getInputVerifier().shouldYieldFocus(view.assumeRoleDurationTextField, view.assumeRoleDurationTextField);
         view.assumeRoleSessionPolicyTextArea.setText(assumeRoleProfile.getSessionPolicy().orElse(null));
-
+ 
     }
-
+ 
     private void initializeCommandProfileFields(CommandProfile commandProfile) {
         String command = commandProfile.getCommand().orElse("");
         Optional<Integer> durationSeconds = commandProfile.getDurationSeconds();
@@ -790,7 +803,7 @@ public class AWSSignerController {
         view.commandExtractedSecretKeyTextField.setText("");
         view.commandExtractedSessionTokenTextField.setText("");
     }
-
+ 
     void updateProfileStatus() {
         Optional<Profile> currentProfileOptional = getCurrentSelectedProfile();
         String status = "Unknown";
@@ -834,11 +847,11 @@ public class AWSSignerController {
                 throw new IllegalStateException(errorMessage);
             }
         }
-
+ 
         logDebug("Profile status set as: " + status);
         view.profileStatusTextLabel.setText(status);
     }
-
+ 
     private DefaultListModel resetProfileList() {
         DefaultListModel listModel = new DefaultListModel();
         List<String> profileNames = model.getProfileNames();
@@ -846,7 +859,7 @@ public class AWSSignerController {
         view.profileList.setModel(listModel);
         return listModel;
     }
-
+ 
     private void resetAlwaysSignWithProfileComboBox() {
         view.alwaysSignWithProfileComboBox.removeItemListener(alwaysSignWithComboBoxProfileSelectionListener);
         List<String> profileNames = model.getProfileNames();
@@ -860,15 +873,15 @@ public class AWSSignerController {
         }
         view.alwaysSignWithProfileComboBox.addItemListener(alwaysSignWithComboBoxProfileSelectionListener);
     }
-
+ 
     public Optional<Profile> getCurrentSelectedProfile() {
         String selectedProfileName = view.profileList.getSelectedValue();
         return model.getProfileForName(selectedProfileName);
     }
-
+ 
     public List<JMenuItem> getMenuItems(IContextMenuInvocation invocation) {
         JMenu menu = new JMenu(BurpExtender.EXTENSION_NAME);
-
+ 
         //Enable/Disable global signing sub menu
         JMenu signerEnableSubmenu = new JMenu("Enable/Disable Signing");
         ButtonGroup signerEnableGroup = new ButtonGroup();
@@ -889,11 +902,11 @@ public class AWSSignerController {
         signerEnableGroup.add(disableSigningMenuItem);
         signerEnableSubmenu.add(disableSigningMenuItem);
         menu.add(signerEnableSubmenu);
-
+ 
         //Set Default Profile
         JMenu defaultProfileSubmenu = new JMenu("Set \"Always Sign With\" Profile");
         ButtonGroup defaultProfileGroup = new ButtonGroup();
-
+ 
         //The first profile is special since it represents NOT having a default profile
         JRadioButtonMenuItem noDefaultProfileItem = new JRadioButtonMenuItem("<html><i>No Profile</i></html>", model.alwaysSignWithProfile == null);
         noDefaultProfileItem.putClientProperty("html.disable", null);
@@ -904,7 +917,7 @@ public class AWSSignerController {
         });
         defaultProfileGroup.add(noDefaultProfileItem);
         defaultProfileSubmenu.add(noDefaultProfileItem);
-
+ 
         //Existing profiles
         List<Profile> profileList = model.profiles;
         for (Profile profile : profileList) {
@@ -918,10 +931,10 @@ public class AWSSignerController {
             defaultProfileSubmenu.add(profileItem);
         }
         menu.add(defaultProfileSubmenu);
-
+ 
         List<JMenuItem> list = new ArrayList<>();
         list.add(menu);
         return list;
     }
-
+ 
 }
