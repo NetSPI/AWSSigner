@@ -735,7 +735,7 @@
                                           </Group>
                                       </Group>
                                   </Group>
-                                  <EmptySpace pref="761" max="32767" attributes="0"/>
+                                  <EmptySpace pref="785" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -894,11 +894,11 @@
                                           </Group>
                                       </Group>
                                   </Group>
-                                  <EmptySpace pref="754" max="32767" attributes="0"/>
+                                  <EmptySpace pref="778" max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
                                   <Component id="assumeRoleSessionPolicyPanel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="0" pref="668" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="678" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -1104,9 +1104,21 @@
                                           <Component id="assumeRoleSessionPolicyConfigurationLabel" min="-2" max="-2" attributes="0"/>
                                           <Component id="assumeRoleSessionPolicyDescriptionLabel" min="-2" pref="680" max="-2" attributes="0"/>
                                           <Component id="assumeRoleSessionPolicyPrettifyButton" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          <Component id="assumeRoleSessionPolicyScrollPane" alignment="0" min="-2" pref="680" max="-2" attributes="0"/>
+                                          <Group type="102" alignment="0" attributes="0">
+                                              <Component id="assumeRoleSessionPolicyScrollPane" min="-2" pref="680" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" attributes="0">
+                                                  <Component id="assumeRoleSessionPolicyFindButton" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="assumeRoleSessionPolicyReplaceButton" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="assumeRoleSessionPolicyReplaceAllButton" alignment="0" pref="91" max="32767" attributes="0"/>
+                                                  <Component id="assumeRoleSessionPolicyReplacementField" max="32767" attributes="0"/>
+                                                  <Component id="assumeRoleSessionPolicyRegexField" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
+                                                  <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
+                                              </Group>
+                                          </Group>
                                       </Group>
-                                      <EmptySpace pref="90" max="32767" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -1118,7 +1130,25 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="assumeRoleSessionPolicyDescriptionLabel" pref="47" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="assumeRoleSessionPolicyScrollPane" pref="357" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" attributes="0">
+                                          <Component id="assumeRoleSessionPolicyScrollPane" pref="357" max="32767" attributes="0"/>
+                                          <Group type="102" attributes="0">
+                                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
+                                              <Component id="assumeRoleSessionPolicyRegexField" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="assumeRoleSessionPolicyReplacementField" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                                              <Component id="assumeRoleSessionPolicyFindButton" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="assumeRoleSessionPolicyReplaceButton" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="assumeRoleSessionPolicyReplaceAllButton" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                          </Group>
+                                      </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="assumeRoleSessionPolicyPrettifyButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -1185,6 +1215,76 @@
                                 <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
                               </AuxValues>
                             </Component>
+                            <Component class="javax.swing.JTextField" name="assumeRoleSessionPolicyRegexField">
+                              <Properties>
+                                <Property name="horizontalAlignment" type="int" value="0"/>
+                                <Property name="toolTipText" type="java.lang.String" value="Enter a regex pattern to search for matches in the text area."/>
+                              </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="assumeRoleSessionPolicyRegexFieldActionPerformed"/>
+                              </Events>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                              </AuxValues>
+                            </Component>
+                            <Component class="javax.swing.JTextField" name="assumeRoleSessionPolicyReplacementField">
+                              <Properties>
+                                <Property name="horizontalAlignment" type="int" value="0"/>
+                                <Property name="toolTipText" type="java.lang.String" value="Provide the replacement text for the matched pattern(s)."/>
+                              </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="assumeRoleSessionPolicyReplacementFieldActionPerformed"/>
+                              </Events>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                              </AuxValues>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="assumeRoleSessionPolicyFindButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Find All"/>
+                                <Property name="actionCommand" type="java.lang.String" value="Find All"/>
+                              </Properties>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                              </AuxValues>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="assumeRoleSessionPolicyReplaceButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Replace"/>
+                              </Properties>
+                              <Events>
+                                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="assumeRoleSessionPolicyReplaceButtonActionPerformed"/>
+                              </Events>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                              </AuxValues>
+                            </Component>
+                            <Component class="javax.swing.JButton" name="assumeRoleSessionPolicyReplaceAllButton">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" value="Replace All"/>
+                              </Properties>
+                              <AuxValues>
+                                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+                              </AuxValues>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jLabel1">
+                              <Properties>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                                  <Font name="Segoe UI" size="13" style="1"/>
+                                </Property>
+                                <Property name="horizontalAlignment" type="int" value="0"/>
+                                <Property name="text" type="java.lang.String" value="Find"/>
+                              </Properties>
+                            </Component>
+                            <Component class="javax.swing.JLabel" name="jLabel2">
+                              <Properties>
+                                <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                                  <Font name="Segoe UI" size="13" style="1"/>
+                                </Property>
+                                <Property name="horizontalAlignment" type="int" value="0"/>
+                                <Property name="text" type="java.lang.String" value="Replace"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                       </SubComponents>
@@ -1249,7 +1349,7 @@
                                           </Group>
                                       </Group>
                                   </Group>
-                                  <EmptySpace pref="760" max="32767" attributes="0"/>
+                                  <EmptySpace pref="781" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>

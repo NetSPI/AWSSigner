@@ -90,6 +90,13 @@ public class BurpTabPanel extends javax.swing.JPanel {
         assumeRoleSessionPolicyScrollPane = new javax.swing.JScrollPane();
         assumeRoleSessionPolicyTextArea = new javax.swing.JTextArea();
         assumeRoleSessionPolicyPrettifyButton = new javax.swing.JButton();
+        assumeRoleSessionPolicyRegexField = new javax.swing.JTextField();
+        assumeRoleSessionPolicyReplacementField = new javax.swing.JTextField();
+        assumeRoleSessionPolicyFindButton = new javax.swing.JButton();
+        assumeRoleSessionPolicyReplaceButton = new javax.swing.JButton();
+        assumeRoleSessionPolicyReplaceAllButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         commandPanel = new javax.swing.JPanel();
         commandConfigurationLabel = new javax.swing.JLabel();
         commandConfigurationDescriptionLabel = new javax.swing.JLabel();
@@ -330,7 +337,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
                             .addComponent(staticSecretKeyTextField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 578, Short.MAX_VALUE)
                             .addComponent(staticSessionTokenTextField)
                             .addComponent(staticAccessKeyTextField, javax.swing.GroupLayout.Alignment.LEADING))))
-                .addContainerGap(761, Short.MAX_VALUE))
+                .addContainerGap(785, Short.MAX_VALUE))
         );
         staticCredentialsPanelLayout.setVerticalGroup(
             staticCredentialsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -416,6 +423,42 @@ public class BurpTabPanel extends javax.swing.JPanel {
         assumeRoleSessionPolicyPrettifyButton.setText("Prettify");
         assumeRoleSessionPolicyPrettifyButton.setToolTipText("Attempt to format the session policy.");
 
+        assumeRoleSessionPolicyRegexField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        assumeRoleSessionPolicyRegexField.setToolTipText("Enter a regex pattern to search for matches in the text area.");
+        assumeRoleSessionPolicyRegexField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                assumeRoleSessionPolicyRegexFieldActionPerformed(evt);
+            }
+        });
+
+        assumeRoleSessionPolicyReplacementField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        assumeRoleSessionPolicyReplacementField.setToolTipText("Provide the replacement text for the matched pattern(s).");
+        assumeRoleSessionPolicyReplacementField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                assumeRoleSessionPolicyReplacementFieldActionPerformed(evt);
+            }
+        });
+
+        assumeRoleSessionPolicyFindButton.setText("Find All");
+        assumeRoleSessionPolicyFindButton.setActionCommand("Find All");
+
+        assumeRoleSessionPolicyReplaceButton.setText("Replace");
+        assumeRoleSessionPolicyReplaceButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                assumeRoleSessionPolicyReplaceButtonActionPerformed(evt);
+            }
+        });
+
+        assumeRoleSessionPolicyReplaceAllButton.setText("Replace All");
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Find");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 13)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Replace");
+
         javax.swing.GroupLayout assumeRoleSessionPolicyPanelLayout = new javax.swing.GroupLayout(assumeRoleSessionPolicyPanel);
         assumeRoleSessionPolicyPanel.setLayout(assumeRoleSessionPolicyPanelLayout);
         assumeRoleSessionPolicyPanelLayout.setHorizontalGroup(
@@ -426,8 +469,18 @@ public class BurpTabPanel extends javax.swing.JPanel {
                     .addComponent(assumeRoleSessionPolicyConfigurationLabel)
                     .addComponent(assumeRoleSessionPolicyDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(assumeRoleSessionPolicyPrettifyButton)
-                    .addComponent(assumeRoleSessionPolicyScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(90, Short.MAX_VALUE))
+                    .addGroup(assumeRoleSessionPolicyPanelLayout.createSequentialGroup()
+                        .addComponent(assumeRoleSessionPolicyScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(assumeRoleSessionPolicyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(assumeRoleSessionPolicyFindButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(assumeRoleSessionPolicyReplaceButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(assumeRoleSessionPolicyReplaceAllButton, javax.swing.GroupLayout.DEFAULT_SIZE, 91, Short.MAX_VALUE)
+                            .addComponent(assumeRoleSessionPolicyReplacementField)
+                            .addComponent(assumeRoleSessionPolicyRegexField)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
         );
         assumeRoleSessionPolicyPanelLayout.setVerticalGroup(
             assumeRoleSessionPolicyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -437,7 +490,23 @@ public class BurpTabPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(assumeRoleSessionPolicyDescriptionLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(assumeRoleSessionPolicyScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                .addGroup(assumeRoleSessionPolicyPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(assumeRoleSessionPolicyScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 357, Short.MAX_VALUE)
+                    .addGroup(assumeRoleSessionPolicyPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(5, 5, 5)
+                        .addComponent(assumeRoleSessionPolicyRegexField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(assumeRoleSessionPolicyReplacementField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(assumeRoleSessionPolicyFindButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(assumeRoleSessionPolicyReplaceButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(assumeRoleSessionPolicyReplaceAllButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(assumeRoleSessionPolicyPrettifyButton))
         );
@@ -467,10 +536,10 @@ public class BurpTabPanel extends javax.swing.JPanel {
                             .addComponent(assumeRoleSessionNameLabel)
                             .addComponent(assumeRoleAssumerProfileLabel)
                             .addComponent(assumeRoleRoleArnLabel))))
-                .addContainerGap(754, Short.MAX_VALUE))
+                .addContainerGap(778, Short.MAX_VALUE))
             .addGroup(assumeRolePanelLayout.createSequentialGroup()
                 .addComponent(assumeRoleSessionPolicyPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 668, Short.MAX_VALUE))
+                .addGap(0, 678, Short.MAX_VALUE))
         );
         assumeRolePanelLayout.setVerticalGroup(
             assumeRolePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -596,7 +665,7 @@ public class BurpTabPanel extends javax.swing.JPanel {
                                             .addComponent(commandExtractedSecretKeyTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
                                             .addComponent(commandExtractedAccessKeyTextField)
                                             .addComponent(commandExtractedSessionTokenTextField))))))))
-                .addContainerGap(760, Short.MAX_VALUE))
+                .addContainerGap(781, Short.MAX_VALUE))
         );
         commandPanelLayout.setVerticalGroup(
             commandPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -778,6 +847,18 @@ public class BurpTabPanel extends javax.swing.JPanel {
         this.requestFocusInWindow();
     }//GEN-LAST:event_formMouseClicked
 
+    private void assumeRoleSessionPolicyReplacementFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assumeRoleSessionPolicyReplacementFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_assumeRoleSessionPolicyReplacementFieldActionPerformed
+
+    private void assumeRoleSessionPolicyRegexFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assumeRoleSessionPolicyRegexFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_assumeRoleSessionPolicyRegexFieldActionPerformed
+
+    private void assumeRoleSessionPolicyReplaceButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_assumeRoleSessionPolicyReplaceButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_assumeRoleSessionPolicyReplaceButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton addProfileButton;
@@ -797,8 +878,13 @@ public class BurpTabPanel extends javax.swing.JPanel {
     public javax.swing.JTextField assumeRoleSessionNameTextField;
     private javax.swing.JLabel assumeRoleSessionPolicyConfigurationLabel;
     private javax.swing.JLabel assumeRoleSessionPolicyDescriptionLabel;
+    public javax.swing.JButton assumeRoleSessionPolicyFindButton;
     private javax.swing.JPanel assumeRoleSessionPolicyPanel;
     public javax.swing.JButton assumeRoleSessionPolicyPrettifyButton;
+    public javax.swing.JTextField assumeRoleSessionPolicyRegexField;
+    public javax.swing.JButton assumeRoleSessionPolicyReplaceAllButton;
+    public javax.swing.JButton assumeRoleSessionPolicyReplaceButton;
+    public javax.swing.JTextField assumeRoleSessionPolicyReplacementField;
     private javax.swing.JScrollPane assumeRoleSessionPolicyScrollPane;
     public javax.swing.JTextArea assumeRoleSessionPolicyTextArea;
     private javax.swing.JLabel commandCommandLabel;
@@ -825,6 +911,8 @@ public class BurpTabPanel extends javax.swing.JPanel {
     public javax.swing.JPanel globalSettingsPanel;
     private javax.swing.JSeparator globalSettingsSeparator;
     public javax.swing.JButton importProfilesButton;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     public javax.swing.JComboBox<String> logLevelComboBox;
     private javax.swing.JLabel logLevelLabel;
     private javax.swing.JLabel profileConfigurationLabel;
